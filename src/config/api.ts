@@ -1,18 +1,24 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.18.240:3000/api';
 
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
 
 api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
+    async (config) => {
+
+        const token = await AsyncStorage.getItem('token');
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
+
         return config;
     },
     (error) => {
@@ -20,15 +26,12 @@ api.interceptors.request.use(
     }
 );
 
-api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+api.interceptors.response.use((Response) => {
+    return Response;
+},
     (error) => {
-        if (error.response && error.response.status === 401) {
-        }
         return Promise.reject(error);
     }
-);
+)
 
 export default api;
