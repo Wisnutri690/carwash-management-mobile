@@ -75,6 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 export const useAuth = (): AuthContextType => {
+
     const context = useContext(AuthContext);
 
     if (!context) {
@@ -82,4 +83,4 @@ export const useAuth = (): AuthContextType => {
     }
 
     return context;
-};
+};
