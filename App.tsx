@@ -7,7 +7,14 @@ import { AuthProvider, useAuth } from './src/context/authContext';
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/Dashboard';
 
-const Stack = createNativeStackNavigator();
+
+export type RootStackParamList = {
+  Login: undefined;
+  Dashboard: undefined;
+  CustomerVehicle: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const customDarkTheme = {
   ...DarkTheme,
@@ -19,6 +26,16 @@ const customDarkTheme = {
     border: '#262626',
   },
 };
+
+const PlaceholderCustomerScreen = () => (
+  <View className="flex-1 justify-center items-center bg-darkBg px-6">
+    <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+    <Text className="text-xl font-bold text-white mb-2">Halaman Pelanggan & Kendaraan</Text>
+    <Text className="text-xs text-neutral-400 text-center">
+      Di sini admin akan mengelola customer dan mendaftarkan unit kendaraan.
+    </Text>
+  </View>
+);
 
 const RootNavigator = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -41,18 +58,27 @@ const RootNavigator = () => {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: '#0a0a0a' },
-        }}
-      >
+        }}>
         {!isAuthenticated ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
+          <>
+            <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen
+              name="CustomerVehicle"
+              component={PlaceholderCustomerScreen}
+              options={{
+                headerShown: true,
+                headerTitle: "Pelanggan & Kendaraan",
+                headerTintColor: "#ffffff",
+                headerStyle: { backgroundColor: "#121212" },
+              }} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
 export default function App() {
   return (
     <AuthProvider>

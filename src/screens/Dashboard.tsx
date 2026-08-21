@@ -1,13 +1,16 @@
 import { useState, useCallback, useEffect } from 'react';
-import {
-    View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, StatusBar,
-} from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, StatusBar, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../../App';
 import { useAuth } from '../context/authContext';
 import { getDashboardOrders, getDashboardCustomers, getDashboardVehicles, } from '../services/dashboardService';
 import type { Order, OrderStatus } from '../types/order';
 
 export const DashboardScreen = () => {
+
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { admin, logOut } = useAuth();
 
     const [orders, setOrders] = useState<Order[]>([]);
@@ -132,12 +135,32 @@ export const DashboardScreen = () => {
                             tintColor="#a855f7"
                             colors={['#a855f7']} />
                     }>
+
+                    <View className="mb-6">
+                        <TouchableOpacity
+                            className="bg-darkSurface border border-darkBorder rounded-2xl p-4 items-center flex-row justify-between"
+                            onPress={() => navigation.navigate('CustomerVehicle')}
+                            activeOpacity={0.7}>
+                            <View className="flex-row items-center">
+                                <View>
+                                    <Text className="text-white font-bold text-sm tracking-wide">
+                                        Kelola Pelanggan & Kendaraan
+                                    </Text>
+                                    <Text className="text-neutral-400 text-xs mt-0.5">
+                                        Tambah customer, Vehicle & buat order
+                                    </Text>
+                                </View>
+                            </View>
+                            <Text className="text-neonPurple font-bold text-lg">→</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <Text className="text-base font-bold text-white mb-3 tracking-wide">
                         Ringkasan Operasional
                     </Text>
 
                     <View className="flex-row flex-wrap justify-between mb-6">
-                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                        <View className="w-[48%] mb-3">
                             <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-amber-500">
                                 <Text className="text-xs text-neutral-400 font-semibold">
                                     Antrean Aktif
@@ -147,9 +170,8 @@ export const DashboardScreen = () => {
                                 </Text>
                                 <Text className="text-[10px] text-neutral-500">Sedang dikerjakan</Text>
                             </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                        </View>
+                        <View className="w-[48%] mb-3">
                             <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-emerald-500">
                                 <Text className="text-xs text-neutral-400 font-semibold">
                                     Total Omset
@@ -161,9 +183,8 @@ export const DashboardScreen = () => {
                                 </Text>
                                 <Text className="text-[10px] text-neutral-500">Transaksi lunas</Text>
                             </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                        </View>
+                        <View className="w-[48%] mb-3">
                             <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-purple-500">
                                 <Text className="text-xs text-neutral-400 font-semibold">
                                     Total Pelanggan
@@ -173,9 +194,8 @@ export const DashboardScreen = () => {
                                 </Text>
                                 <Text className="text-[10px] text-neutral-500">Customer terdaftar</Text>
                             </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                        </View>
+                        <View className="w-[48%] mb-3">
                             <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-blue-500">
                                 <Text className="text-xs text-neutral-400 font-semibold">
                                     Kendaraan
@@ -183,10 +203,11 @@ export const DashboardScreen = () => {
                                 <Text className="text-xl font-bold text-blue-400 my-1">
                                     {vehicleCount}
                                 </Text>
-                                <Text className="text-[10px] text-neutral-500">Unit terdata</Text>
+                                <Text className="text-[10px] text-neutral-500"> Vehicle Terdaftar</Text>
                             </View>
-                        </TouchableOpacity>
+                        </View>
                     </View>
+
 
                     <View className="flex-row justify-between items-center mb-3">
                         <Text className="text-base font-bold text-white tracking-wide">
