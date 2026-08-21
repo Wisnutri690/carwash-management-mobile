@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
-    View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, StatusBar, Platform,
+    View, Text, ScrollView, TouchableOpacity, ActivityIndicator, RefreshControl, Alert, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/authContext';
@@ -8,7 +8,6 @@ import { getDashboardOrders, getDashboardCustomers, getDashboardVehicles, } from
 import type { Order, OrderStatus } from '../types/order';
 
 export const DashboardScreen = () => {
-
     const { admin, logOut } = useAuth();
 
     const [orders, setOrders] = useState<Order[]>([]);
@@ -29,7 +28,6 @@ export const DashboardScreen = () => {
             setOrders(ordersData);
             setCustomerCount(customersData.length);
             setVehicleCount(vehiclesData.length);
-
         } catch (error: any) {
             console.log('Error dashboard:', error);
             const errorMessage =
@@ -83,107 +81,128 @@ export const DashboardScreen = () => {
     const getStatusInfo = (status: OrderStatus) => {
         switch (status) {
             case 'WAITING':
-                return { label: 'Antrean', color: '#fbbf24' };
+                return { label: 'Antrean', colorClass: 'text-amber-400' };
             case 'IN_PROGRESS':
-                return { label: 'Sedang Dicuci', color: '#60a5fa' };
+                return { label: 'Sedang Dicuci', colorClass: 'text-blue-400' };
             case 'COMPLETED':
-                return { label: 'Selesai', color: '#34d399' };
+                return { label: 'Selesai', colorClass: 'text-emerald-400' };
             case 'CANCELLED':
-                return { label: 'Dibatalkan', color: '#f87171' };
+                return { label: 'Dibatalkan', colorClass: 'text-red-400' };
             default:
-                return { label: status, color: '#a3a3a3' };
+                return { label: status, colorClass: 'text-neutral-400' };
         }
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <SafeAreaView className="flex-1 bg-darkBg" edges={['top', 'left', 'right']}>
             <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
 
-            <View style={styles.header}>
+            <View className="flex-row justify-between items-center px-5 py-4 bg-darkSurface border-b border-darkBorder">
                 <View>
-                    <Text style={styles.greeting}>Selamat Datang,</Text>
-                    <Text style={styles.adminName}>
+                    <Text className="text-xs text-neutral-400">Selamat Datang,</Text>
+                    <Text className="text-lg font-bold text-white mt-0.5">
                         {admin?.name || admin?.email || 'Admin APEX'}
                     </Text>
-                    <Text style={styles.roleSubText}>Hai, Admin</Text>
+                    <Text className="text-xs text-neonPurple font-medium mt-0.5">Hai, Admin</Text>
                 </View>
 
                 <TouchableOpacity
-                    style={styles.logoutButton}
+                    className="px-3.5 py-2 bg-red-500/15 rounded-xl border border-red-500/30"
                     onPress={handleLogout}
                     activeOpacity={0.7}>
-                    <Text style={styles.logoutText}>Keluar</Text>
+                    <Text className="text-red-400 text-xs font-bold">Keluar</Text>
                 </TouchableOpacity>
             </View>
 
             {isLoading ? (
-                <View style={styles.loadingContainer}>
+                <View className="flex-1 justify-center items-center p-5 bg-darkBg">
                     <ActivityIndicator size="large" color="#a855f7" />
-                    <Text style={styles.loadingText}>Memuat data dashboard...</Text>
+                    <Text className="mt-3 text-xs text-neutral-400 font-medium">
+                        Memuat data dashboard...
+                    </Text>
                 </View>
             ) : (
                 <ScrollView
-                    contentContainerStyle={styles.scrollContent}
+                    contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
                     showsVerticalScrollIndicator={false}
                     refreshControl={
                         <RefreshControl
                             refreshing={isRefreshing}
                             onRefresh={onRefresh}
-                            tintColor="#ff0077ff"
+                            tintColor="#a855f7"
                             colors={['#a855f7']} />
                     }>
-                    <Text style={styles.sectionTitle}>Ringkasan Operasional</Text>
-                    <View style={styles.statsGrid}>
-                        <TouchableOpacity style={styles.statCardWrapper} activeOpacity={0.7}>
-                            <View style={[styles.statCard, { borderLeftColor: '#f59e0b' }]}>
-                                <Text style={styles.statLabel}>Antrean Aktif</Text>
-                                <Text style={[styles.statValue, { color: '#fbbf24' }]}>
+                    <Text className="text-base font-bold text-white mb-3 tracking-wide">
+                        Ringkasan Operasional
+                    </Text>
+
+                    <View className="flex-row flex-wrap justify-between mb-6">
+                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                            <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-amber-500">
+                                <Text className="text-xs text-neutral-400 font-semibold">
+                                    Antrean Aktif
+                                </Text>
+                                <Text className="text-xl font-bold text-amber-400 my-1">
                                     {activeQueueCount}
                                 </Text>
-                                <Text style={styles.statSub}>Sedang dikerjakan</Text>
+                                <Text className="text-[10px] text-neutral-500">Sedang dikerjakan</Text>
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.statCardWrapper} activeOpacity={0.7}>
-                            <View style={[styles.statCard, { borderLeftColor: '#10b981' }]}>
-                                <Text style={styles.statLabel}>Total Omset</Text>
-                                <Text style={[styles.statValue, { color: '#34d399', fontSize: 16 }]} numberOfLines={1}>
+                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                            <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-emerald-500">
+                                <Text className="text-xs text-neutral-400 font-semibold">
+                                    Total Omset
+                                </Text>
+                                <Text
+                                    className="text-base font-bold text-emerald-400 my-1"
+                                    numberOfLines={1}>
                                     {formatCurrency(totalIncome)}
                                 </Text>
-                                <Text style={styles.statSub}>Transaksi lunas</Text>
+                                <Text className="text-[10px] text-neutral-500">Transaksi lunas</Text>
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.statCardWrapper} activeOpacity={0.7}>
-                            <View style={[styles.statCard, { borderLeftColor: '#a855f7' }]}>
-                                <Text style={styles.statLabel}>Total Pelanggan</Text>
-                                <Text style={[styles.statValue, { color: '#c084fc' }]}>
+                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                            <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-purple-500">
+                                <Text className="text-xs text-neutral-400 font-semibold">
+                                    Total Pelanggan
+                                </Text>
+                                <Text className="text-xl font-bold text-purple-400 my-1">
                                     {customerCount}
                                 </Text>
-                                <Text style={styles.statSub}>Customer terdaftar</Text>
+                                <Text className="text-[10px] text-neutral-500">Customer terdaftar</Text>
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.statCardWrapper} activeOpacity={0.7}>
-                            <View style={[styles.statCard, { borderLeftColor: '#3b82f6' }]}>
-                                <Text style={styles.statLabel}>Kendaraan</Text>
-                                <Text style={[styles.statValue, { color: '#60a5fa' }]}>
+                        <TouchableOpacity className="w-[48%] mb-3" activeOpacity={0.7}>
+                            <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-blue-500">
+                                <Text className="text-xs text-neutral-400 font-semibold">
+                                    Kendaraan
+                                </Text>
+                                <Text className="text-xl font-bold text-blue-400 my-1">
                                     {vehicleCount}
                                 </Text>
-                                <Text style={styles.statSub}>Unit terdata</Text>
+                                <Text className="text-[10px] text-neutral-500">Unit terdata</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.sectionHeaderRow}>
-                        <Text style={styles.sectionTitle}>Data Order Terkini</Text>
-                        <Text style={styles.queueCountText}>({orders.length} Order)</Text>
+                    <View className="flex-row justify-between items-center mb-3">
+                        <Text className="text-base font-bold text-white tracking-wide">
+                            Data Order Terkini
+                        </Text>
+                        <Text className="text-xs text-neutral-400 font-semibold">
+                            ({orders.length} Order)
+                        </Text>
                     </View>
 
                     {orders.length === 0 ? (
-                        <View style={styles.emptyCard}>
-                            <Text style={styles.emptyTitle}>Belum Ada Order Terkini</Text>
-                            <Text style={styles.emptyText}>
+                        <View className="bg-darkSurface rounded-2xl p-6 items-center border border-darkBorder">
+                            <Text className="text-base font-bold text-white mb-1.5">
+                                Belum Ada Order Terkini
+                            </Text>
+                            <Text className="text-xs text-neutral-500 text-center leading-5">
                                 Belum ada order pencucian hari ini. Tarik layar ke bawah untuk memperbarui.
                             </Text>
                         </View>
@@ -193,54 +212,69 @@ export const DashboardScreen = () => {
                             const isPaid = orderItem.paymentStatus === 'PAID';
 
                             return (
-                                <TouchableOpacity key={orderItem.id} style={styles.orderCardWrapper} activeOpacity={0.7}>
-                                    <View style={styles.orderCard}>
-                                        <View style={styles.orderCardHeader}>
+                                <TouchableOpacity
+                                    key={orderItem.id}
+                                    className="w-full mb-3"
+                                    activeOpacity={0.7}>
+                                    <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder">
+                                        <View className="flex-row justify-between items-start">
                                             <View>
-                                                <Text style={styles.plateNumber}>
+                                                <Text className="text-base font-bold text-white font-mono tracking-wider">
                                                     {orderItem.vehicle?.plateNumber || 'NO PLAT'}
                                                 </Text>
-                                                <Text style={styles.vehicleInfo}>
+                                                <Text className="text-xs text-neutral-400 mt-0.5">
                                                     {orderItem.vehicle?.brand} {orderItem.vehicle?.model}
                                                 </Text>
                                             </View>
 
-                                            <Text style={[styles.statusText, { color: statusInfo.color }]}>
+                                            <Text className={`text-xs font-bold ${statusInfo.colorClass}`}>
                                                 {statusInfo.label}
                                             </Text>
                                         </View>
 
-                                        <View style={styles.orderDivider} />
-                                        <View style={styles.orderInfoRow}>
-                                            <View style={styles.infoCol}>
-                                                <Text style={styles.infoLabel}>Pelanggan</Text>
-                                                <Text style={styles.infoValue} numberOfLines={1}>
+                                        <View className="h-[1px] bg-neutral-800 my-3" />
+
+                                        <View className="flex-row justify-between">
+                                            <View className="flex-1">
+                                                <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
+                                                    Pelanggan
+                                                </Text>
+                                                <Text
+                                                    className="text-xs font-semibold text-neutral-200 mt-0.5"
+                                                    numberOfLines={1}>
                                                     {orderItem.customer?.name || 'Customer'}
                                                 </Text>
                                             </View>
 
-                                            <View style={styles.infoCol}>
-                                                <Text style={styles.infoLabel}>Staff</Text>
-                                                <Text style={styles.infoValue} numberOfLines={1}>
+                                            <View className="flex-1">
+                                                <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
+                                                    Staff
+                                                </Text>
+                                                <Text
+                                                    className="text-xs font-semibold text-neutral-200 mt-0.5"
+                                                    numberOfLines={1}>
                                                     {orderItem.staff?.name || 'Belum Ditugaskan'}
                                                 </Text>
                                             </View>
 
-                                            <View style={styles.infoColRight}>
-                                                <Text style={styles.infoLabel}>Pembayaran</Text>
+                                            <View className="flex-[1.2] items-end">
+                                                <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
+                                                    Pembayaran
+                                                </Text>
                                                 <Text
-                                                    style={[
-                                                        styles.paymentStatusText,
-                                                        { color: isPaid ? '#34d399' : '#f87171' },
-                                                    ]}>
+                                                    className={`text-[11px] font-bold mt-0.5 ${isPaid ? 'text-emerald-400' : 'text-red-400'}`}>
                                                     {isPaid ? `LUNAS (${orderItem.paymentMethod || 'QRIS'})` : 'BELUM BAYAR'}
                                                 </Text>
                                             </View>
                                         </View>
 
-                                        <View style={styles.totalRow}>
-                                            <Text style={styles.totalLabel}>Total Tagihan:</Text>
-                                            <Text style={styles.totalValue}>{formatCurrency(orderItem.totalPrice)}</Text>
+                                        <View className="flex-row justify-between items-center mt-3 pt-2.5 border-t border-neutral-800">
+                                            <Text className="text-xs text-neutral-400 font-medium">
+                                                Total Tagihan:
+                                            </Text>
+                                            <Text className="text-sm font-bold text-neonPurple font-mono">
+                                                {formatCurrency(orderItem.totalPrice)}
+                                            </Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -252,223 +286,5 @@ export const DashboardScreen = () => {
         </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#0a0a0a',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 16,
-        backgroundColor: '#121212',
-        borderBottomWidth: 1,
-        borderBottomColor: '#262626',
-    },
-    greeting: {
-        fontSize: 12,
-        color: '#a3a3a3',
-    },
-    adminName: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#ffffff',
-        marginTop: 1,
-    },
-    roleSubText: {
-        fontSize: 12,
-        color: '#a855f7',
-        marginTop: 2,
-        fontWeight: '500',
-    },
-    logoutButton: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        backgroundColor: 'rgba(239, 68, 68, 0.15)',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: 'rgba(239, 68, 68, 0.3)',
-    },
-    logoutText: {
-        color: '#f87171',
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#0a0a0a',
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 13,
-        color: '#a3a3a3',
-        fontWeight: '500',
-    },
-    scrollContent: {
-        padding: 20,
-        paddingBottom: 40,
-    },
-    sectionTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#ffffff',
-        marginBottom: 12,
-        letterSpacing: 0.3,
-    },
-    statsGrid: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'space-between',
-        marginBottom: 24,
-    },
-    statCardWrapper: {
-        width: '48%',
-        marginBottom: 12,
-    },
-    statCard: {
-        backgroundColor: '#121212',
-        borderRadius: 16,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#262626',
-        borderLeftWidth: 4,
-    },
-    statLabel: {
-        fontSize: 12,
-        color: '#a3a3a3',
-        fontWeight: '600',
-    },
-    statValue: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginVertical: 4,
-    },
-    statSub: {
-        fontSize: 10,
-        color: '#737373',
-    },
-    sectionHeaderRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    queueCountText: {
-        fontSize: 13,
-        color: '#a3a3a3',
-        fontWeight: '600',
-    },
-    emptyCard: {
-        backgroundColor: '#121212',
-        borderRadius: 16,
-        padding: 24,
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#262626',
-    },
-    emptyTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#ffffff',
-        marginBottom: 6,
-    },
-    emptyText: {
-        fontSize: 12,
-        color: '#737373',
-        textAlign: 'center',
-        lineHeight: 18,
-    },
-    orderCardWrapper: {
-        width: '100%',
-        marginBottom: 12,
-    },
-    orderCard: {
-        backgroundColor: '#121212',
-        borderRadius: 16,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: '#262626',
-    },
-    orderCardHeader: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-    },
-    plateNumber: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#ffffff',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-        letterSpacing: 0.5,
-    },
-    vehicleInfo: {
-        fontSize: 12,
-        color: '#a3a3a3',
-        marginTop: 2,
-    },
-    statusText: {
-        fontSize: 13,
-        fontWeight: '700',
-    },
-    orderDivider: {
-        height: 1,
-        backgroundColor: '#1e1e1e',
-        marginVertical: 12,
-    },
-    orderInfoRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-    },
-    infoCol: {
-        flex: 1,
-    },
-    infoColRight: {
-        flex: 1.2,
-        alignItems: 'flex-end',
-    },
-    infoLabel: {
-        fontSize: 10,
-        color: '#737373',
-        textTransform: 'uppercase',
-        fontWeight: '600',
-    },
-    infoValue: {
-        fontSize: 12,
-        fontWeight: '600',
-        color: '#e5e5e5',
-        marginTop: 2,
-    },
-    paymentStatusText: {
-        fontSize: 11,
-        fontWeight: '700',
-        marginTop: 2,
-    },
-    totalRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 12,
-        paddingTop: 10,
-        borderTopWidth: 1,
-        borderTopColor: '#1e1e1e',
-    },
-    totalLabel: {
-        fontSize: 12,
-        color: '#a3a3a3',
-        fontWeight: '500',
-    },
-    totalValue: {
-        fontSize: 15,
-        fontWeight: 'bold',
-        color: '#c084fc',
-        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
-    },
-});
 
 export default DashboardScreen;

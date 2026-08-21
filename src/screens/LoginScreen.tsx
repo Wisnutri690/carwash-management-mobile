@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
-    View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView,
+    View, Text, TextInput, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/authContext';
 
-export const LoginScreen: React.FC = () => {
+export const LoginScreen = () => {
     const { login } = useAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
             Alert.alert('Perhatian', 'Email dan password wajib diisi!');
@@ -20,10 +22,11 @@ export const LoginScreen: React.FC = () => {
             setIsSubmitting(true);
             await login({ email: email.trim(), password: password.trim() });
         } catch (error: any) {
+            console.log('Login error:', error);
             const errorMsg =
                 error?.response?.data?.message ||
                 error.message ||
-                'Login gagal. Periksa koneksi backend atau kredensial.';
+                'Login gagal. Periksa koneksi dengan backend.';
             Alert.alert('Login Gagal', errorMsg);
         } finally {
             setIsSubmitting(false);
@@ -31,146 +34,78 @@ export const LoginScreen: React.FC = () => {
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-            <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-                <View style={styles.headerContainer}>
-                    <View style={styles.logoBadge}>
-                        <Text style={styles.logoText}>CW</Text>
-                    </View>
-                    <Text style={styles.title}>Carwash Admin</Text>
-                    <Text style={styles.subtitle}>Masuk untuk mengelola operasional & order</Text>
-                </View>
+        <SafeAreaView className="flex-1 bg-darkBg" edges={['top', 'left', 'right']}>
+            <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
 
-                <View style={styles.formCard}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Email</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="admin@carwash.com"
-                            placeholderTextColor="#9ca3af"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            value={email}
-                            onChangeText={setEmail}
-                            editable={!isSubmitting}
-                        />
+            <KeyboardAvoidingView
+                className="flex-1"
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}>
+                    <View className="items-center mb-8">
+                        <View className="flex-row items-center justify-center mb-2">
+                            <Text className="text-3xl font-bold text-white tracking-widest mr-2">
+                                APEX
+                            </Text>
+                            <Text className="text-3xl font-bold text-neonPink tracking-widest">
+                                CARWASH
+                            </Text>
+                        </View>
+                        <Text className="text-xs text-neutral-400 text-center">
+                            Portal Administrator Operasional & Layanan
+                        </Text>
                     </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Password</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="••••••••"
-                            placeholderTextColor="#9ca3af"
-                            secureTextEntry
-                            value={password}
-                            onChangeText={setPassword}
-                            editable={!isSubmitting}
-                        />
-                    </View>
+                    <View className="bg-darkSurface rounded-3xl p-6 border border-darkBorder">
+                        <View className="mb-4">
+                            <Text className="text-xs font-semibold text-neutral-300 mb-2">
+                                Email Admin
+                            </Text>
+                            <TextInput
+                                className="h-12 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                placeholder="admin@apexcarwash.com"
+                                placeholderTextColor="#737373"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                value={email}
+                                onChangeText={setEmail}
+                                editable={!isSubmitting} />
+                        </View>
 
-                    <TouchableOpacity
-                        style={[styles.button, isSubmitting && styles.buttonDisabled]}
-                        onPress={handleLogin}
-                        disabled={isSubmitting}
-                        activeOpacity={0.8}
-                    >
-                        {isSubmitting ? (
-                            <ActivityIndicator color="#ffffff" />
-                        ) : (
-                            <Text style={styles.buttonText}>Masuk</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                        <View className="mb-4">
+                            <Text className="text-xs font-semibold text-neutral-300 mb-2">
+                                Password
+                            </Text>
+                            <TextInput
+                                className="h-12 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                placeholder="Masukkan password"
+                                placeholderTextColor="#737373"
+                                secureTextEntry
+                                value={password}
+                                onChangeText={setPassword}
+                                editable={!isSubmitting} />
+                        </View>
+
+                        <TouchableOpacity
+                            className={`h-12 rounded-xl items-center justify-center mt-2 ${isSubmitting ? 'bg-neonPurple/50' : 'bg-neonPurple'}`}
+                            onPress={handleLogin}
+                            disabled={isSubmitting}
+                            activeOpacity={0.8}>
+                            {isSubmitting ? (
+                                <ActivityIndicator color="#ffffff" />
+                            ) : (
+                                <Text className="text-white font-bold text-sm tracking-wide">
+                                    Login
+                                </Text>
+                            )}
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f8fafc',
-    },
-    scrollContainer: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        padding: 24,
-    },
-    headerContainer: {
-        alignItems: 'center',
-        marginBottom: 28,
-    },
-    logoBadge: {
-        width: 60,
-        height: 60,
-        borderRadius: 16,
-        backgroundColor: '#2563eb',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 12,
-    },
-    logoText: {
-        color: '#ffffff',
-        fontSize: 22,
-        fontWeight: 'bold',
-    },
-    title: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#0f172a',
-        marginBottom: 4,
-    },
-    subtitle: {
-        fontSize: 13,
-        color: '#64748b',
-        textAlign: 'center',
-    },
-    formCard: {
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
-        padding: 20,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-    },
-    inputGroup: {
-        marginBottom: 16,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#334155',
-        marginBottom: 6,
-    },
-    input: {
-        height: 48,
-        backgroundColor: '#f8fafc',
-        borderWidth: 1,
-        borderColor: '#cbd5e1',
-        borderRadius: 10,
-        paddingHorizontal: 14,
-        fontSize: 15,
-        color: '#0f172a',
-    },
-    button: {
-        height: 48,
-        backgroundColor: '#2563eb',
-        borderRadius: 10,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 8,
-    },
-    buttonDisabled: {
-        backgroundColor: '#93c5fd',
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-});
 
 export default LoginScreen;
