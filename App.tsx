@@ -1,12 +1,11 @@
 import "./global.css";
-import React from 'react';
 import { View, ActivityIndicator, StatusBar, Text } from 'react-native';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider, useAuth } from './src/context/authContext';
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/Dashboard';
-
+import CustomerVehicleScreen from "./src/screens/CustomerVehicle";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -26,16 +25,6 @@ const customDarkTheme = {
     border: '#262626',
   },
 };
-
-const PlaceholderCustomerScreen = () => (
-  <View className="flex-1 justify-center items-center bg-darkBg px-6">
-    <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
-    <Text className="text-xl font-bold text-white mb-2">Halaman Pelanggan & Kendaraan</Text>
-    <Text className="text-xs text-neutral-400 text-center">
-      Di sini admin akan mengelola customer dan mendaftarkan unit kendaraan.
-    </Text>
-  </View>
-);
 
 const RootNavigator = () => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -66,19 +55,15 @@ const RootNavigator = () => {
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
             <Stack.Screen
               name="CustomerVehicle"
-              component={PlaceholderCustomerScreen}
-              options={{
-                headerShown: true,
-                headerTitle: "Pelanggan & Kendaraan",
-                headerTintColor: "#ffffff",
-                headerStyle: { backgroundColor: "#121212" },
-              }} />
+              component={CustomerVehicleScreen}
+              options={{ headerShown: false }} />
           </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
 export default function App() {
   return (
     <AuthProvider>

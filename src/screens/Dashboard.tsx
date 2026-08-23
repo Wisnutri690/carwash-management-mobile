@@ -151,7 +151,6 @@ export const DashboardScreen = () => {
                                     </Text>
                                 </View>
                             </View>
-                            <Text className="text-neonPurple font-bold text-lg">→</Text>
                         </TouchableOpacity>
                     </View>
 
