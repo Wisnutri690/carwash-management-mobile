@@ -6,11 +6,13 @@ import { AuthProvider, useAuth } from './src/context/authContext';
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/Dashboard';
 import CustomerVehicleScreen from "./src/screens/CustomerVehicle";
+import OrderScreen from "./src/screens/OrderScreens";
 
 export type RootStackParamList = {
   Login: undefined;
   Dashboard: undefined;
   CustomerVehicle: undefined;
+  OrderScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -56,6 +58,10 @@ const RootNavigator = () => {
             <Stack.Screen
               name="CustomerVehicle"
               component={CustomerVehicleScreen}
+              options={{ headerShown: false }} />
+            <Stack.Screen
+              name="OrderScreen"
+              component={OrderScreen}
               options={{ headerShown: false }} />
           </>
         )}

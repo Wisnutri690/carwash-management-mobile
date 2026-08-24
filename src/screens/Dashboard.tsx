@@ -149,22 +149,31 @@ export const DashboardScreen = () => {
             />
           }
         >
-          <View className="mb-6">
+          <View className="mb-6 flex-row gap-3">
             <TouchableOpacity
-              className="bg-darkSurface border border-darkBorder rounded-2xl p-4 items-center flex-row justify-between"
+              className="flex-1 bg-darkSurface border border-neonPurple/50 rounded-2xl p-4 justify-between"
               onPress={() => navigation.navigate("CustomerVehicle")}
               activeOpacity={0.7}
             >
-              <View className="flex-row items-center">
-                <View>
-                  <Text className="text-white font-bold text-sm tracking-wide">
-                    Kelola Pelanggan & Kendaraan
-                  </Text>
-                  <Text className="text-neutral-400 text-xs mt-0.5">
-                    Tambah customer, Vehicle & buat order
-                  </Text>
-                </View>
-              </View>
+              <Text className="text-white font-bold text-sm tracking-wide">
+                Pelanggan & Unit
+              </Text>
+              <Text className="text-neonPurple font-semibold text-xs mt-0.5">
+                Kelola data customer
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="flex-1 bg-darkSurface border border-neonPurple/50 rounded-2xl p-4 justify-between"
+              onPress={() => navigation.navigate("OrderScreen")}
+              activeOpacity={0.7}
+            >
+              <Text className="text-white font-bold text-sm tracking-wide">
+                Transaksi Order
+              </Text>
+              <Text className="text-neonPurple font-semibold text-xs mt-0.5">
+                Kelola order cuci
+              </Text>
             </TouchableOpacity>
           </View>
 

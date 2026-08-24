@@ -227,7 +227,7 @@ export const UpdateCustomerVehicle = ({ visible, mode, customerData, vehicleData
                             onPress={onClose}
                             disabled={isSubmitting}
                             activeOpacity={0.7} >
-                            <Text className="text-neutral-400 font-bold text-xs">Batal</Text>
+                            <Text className="text-neutral-400 font-bold text-xs px-2 text-center">Batal</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             className="px-6 py-3 rounded-xl bg-neonPurple"
@@ -237,7 +237,7 @@ export const UpdateCustomerVehicle = ({ visible, mode, customerData, vehicleData
                             {isSubmitting ? (
                                 <ActivityIndicator size="small" color="#ffffff" />
                             ) : (
-                                <Text className="text-white font-bold text-xs tracking-wide">
+                                <Text className="text-white font-bold text-xs px-2 text-center">
                                     Simpan Perubahan
                                 </Text>
                             )}

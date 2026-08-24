@@ -110,7 +110,7 @@ export const DeleteCustomerVehicle = ({
               disabled={isDeleting}
               activeOpacity={0.7}
             >
-              <Text className="text-neutral-400 font-bold text-xs">Batal</Text>
+              <Text className="text-neutral-400 font-bold text-xs px-2 text-center">Batal</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className={`px-5 py-3 rounded-xl ${isDeleting ? "bg-red-800" : "bg-red-600"}`}
@@ -121,7 +121,7 @@ export const DeleteCustomerVehicle = ({
               {isDeleting ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-xs tracking-wide">
+                <Text className="text-white font-bold text-xs px-2 text-center">
                   Ya, Hapus
                 </Text>
               )}

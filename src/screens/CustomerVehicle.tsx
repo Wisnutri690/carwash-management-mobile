@@ -15,10 +15,10 @@ import { getCustomer } from "../services/customerServices";
 import { getVehicle } from "../services/vehicleServices";
 import type { Vehicle } from "../types/vehicle";
 import type { Customer } from "../types/customer";
-import { ReadCustomerVehicle } from "../components/CRUD/ReadCustomerVehicle";
-import { CreateCustomerVehicle } from "../components/CRUD/CreateCustomerVehicle";
-import { UpdateCustomerVehicle } from "../components/CRUD/UpdateCustomerVehicle";
-import { DeleteCustomerVehicle } from "../components/CRUD/DeleteCustomerVehicle";
+import { ReadCustomerVehicle } from "../components/CRUD CustomerVehicle/ReadCustomerVehicle";
+import { CreateCustomerVehicle } from "../components/CRUD CustomerVehicle/CreateCustomerVehicle";
+import { UpdateCustomerVehicle } from "../components/CRUD CustomerVehicle/UpdateCustomerVehicle";
+import { DeleteCustomerVehicle } from "../components/CRUD CustomerVehicle/DeleteCustomerVehicle";
 
 const ITEMS_PER_PAGE = 3;
 
