@@ -51,6 +51,7 @@ AGENTS.md
 GEMINI.md
 .agents/
 .gemini/
+.claude/
 .vscode/
 .idea/
 
