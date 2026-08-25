@@ -17,6 +17,8 @@ import { getServices } from "../../services/serviceService";
 import type { Customer } from "../../types/customer";
 import type { Vehicle } from "../../types/vehicle";
 import type { Service } from "../../types/service";
+import { getStaffs } from "../../services/staffServices";
+import type { Staff } from "../../types/staff";
 
 interface CreateOrderProps {
   visible: boolean;
@@ -32,9 +34,15 @@ export const CreateOrder = ({
   const [customer, setCustomer] = useState<Customer[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [services, setServices] = useState<Service[]>([]);
+  const [staffs, setStaffs] = useState<Staff[]>([]);
 
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | number>("");
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string | number>("");
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | number>(
+    "",
+  );
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string | number>(
+    "",
+  );
+  const [selectedStaffId, setSelectedStaffId] = useState<string | number>("");
   const [selectedItems, setSelectedItems] = useState<
     { serviceId: string | number; quantity: number }[]
   >([]);
@@ -45,20 +53,26 @@ export const CreateOrder = ({
   const fetchOptions = async () => {
     try {
       setIsLoadingData(true);
-      const [customerList, vehicleList, serviceList] = await Promise.all([
-        getCustomer(),
-        getVehicle(),
-        getServices(),
-      ]);
+      const [customerList, vehicleList, serviceList, staffList] =
+        await Promise.all([
+          getCustomer(),
+          getVehicle(),
+          getServices(),
+          getStaffs(),
+        ]);
       setCustomer(customerList);
       setVehicles(vehicleList);
       setServices(serviceList);
+      setStaffs(staffList);
 
       if (customerList.length > 0) {
         setSelectedCustomerId(customerList[0].id);
       }
       if (serviceList.length > 0) {
         setSelectedItems([{ serviceId: serviceList[0].id, quantity: 1 }]);
+      }
+      if (staffList.length > 0) {
+        setSelectedStaffId(staffList[0].id);
       }
     } catch (error) {
       console.log("Error fetch options for CreateOrder:", error);
@@ -87,7 +101,9 @@ export const CreateOrder = ({
 
   const handleToggleService = (serviceId: string | number) => {
     setSelectedItems((prev) => {
-      const exists = prev.find((i) => String(i.serviceId) === String(serviceId));
+      const exists = prev.find(
+        (i) => String(i.serviceId) === String(serviceId),
+      );
       if (exists) {
         return prev.filter((i) => String(i.serviceId) !== String(serviceId));
       } else {
@@ -109,7 +125,9 @@ export const CreateOrder = ({
   };
 
   const calculatedTotalPrice = services.reduce((sum, srv) => {
-    const item = selectedItems.find((i) => String(i.serviceId) === String(srv.id));
+    const item = selectedItems.find(
+      (i) => String(i.serviceId) === String(srv.id),
+    );
     return sum + (item ? Number(srv.price) * item.quantity : 0);
   }, 0);
 
@@ -125,6 +143,7 @@ export const CreateOrder = ({
     setSelectedCustomerId("");
     setSelectedVehicleId("");
     setSelectedItems([]);
+    setSelectedStaffId("");
     onClose();
   };
 
@@ -150,6 +169,7 @@ export const CreateOrder = ({
       await createOrder({
         customerId: selectedCustomerId,
         vehicleId: selectedVehicleId,
+        staffId: selectedStaffId ? Number(selectedStaffId) : undefined,
         items: selectedItems.map((item) => ({
           serviceId: Number(item.serviceId),
           quantity: item.quantity,
@@ -201,7 +221,6 @@ export const CreateOrder = ({
             </View>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
-              {/* Section 1: Pilih Pelanggan */}
               <View className="mb-4">
                 <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
                   1. Pilih Pelanggan *
@@ -209,7 +228,8 @@ export const CreateOrder = ({
                 {customer.length === 0 ? (
                   <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
                     <Text className="text-xs text-neutral-500">
-                      Belum ada data pelanggan. Tambahkan pelanggan terlebih dahulu.
+                      Belum ada data pelanggan. Tambahkan pelanggan terlebih
+                      dahulu.
                     </Text>
                   </View>
                 ) : (
@@ -245,7 +265,6 @@ export const CreateOrder = ({
                 )}
               </View>
 
-              {/* Section 2: Pilih Unit Kendaraan */}
               <View className="mb-4">
                 <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
                   2. Pilih Unit Kendaraan *
@@ -289,10 +308,53 @@ export const CreateOrder = ({
                 )}
               </View>
 
-              {/* Section 3: Pilih Layanan Cuci (Bisa Lebih Dari 1) */}
               <View className="mb-4">
                 <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
-                  3. Layanan Cuci (Bisa Pilih Lebih Dari 1) *
+                  3. Staff yang Bertugas *
+                </Text>
+                {staffs.length === 0 ? (
+                  <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
+                    <Text className="text-xs text-neutral-500">
+                      Belum ada data staff di database.
+                    </Text>
+                  </View>
+                ) : (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View className="flex-row gap-2">
+                      {staffs.map((staff) => {
+                        const isSelected =
+                          String(selectedStaffId) === String(staff.id);
+                        return (
+                          <TouchableOpacity
+                            key={staff.id}
+                            className={`px-3.5 py-2.5 rounded-xl border ${
+                              isSelected
+                                ? "bg-neonPurple/20 border-neonPurple"
+                                : "bg-darkBg border-darkBorder"
+                            }`}
+                            onPress={() => setSelectedStaffId(staff.id)}
+                          >
+                            <Text
+                              className={`text-xs font-bold ${
+                                isSelected ? "text-neonPurple" : "text-white"
+                              }`}
+                            >
+                              {staff.name}
+                            </Text>
+                            <Text className="text-[10px] text-neutral-400 mt-0.5">
+                              {staff.phone || "Staff"}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </ScrollView>
+                )}
+              </View>
+
+              <View className="mb-4">
+                <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
+                  4. Layanan Cuci (Bisa Pilih Lebih Dari 1) *
                 </Text>
                 {services.length === 0 ? (
                   <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
@@ -339,7 +401,9 @@ export const CreateOrder = ({
                               <View>
                                 <Text
                                   className={`text-xs font-bold ${
-                                    isSelected ? "text-white" : "text-neutral-300"
+                                    isSelected
+                                      ? "text-white"
+                                      : "text-neutral-300"
                                   }`}
                                 >
                                   {service.name}
@@ -355,18 +419,26 @@ export const CreateOrder = ({
                             <View className="flex-row items-center bg-darkSurface rounded-xl border border-darkBorder p-1">
                               <TouchableOpacity
                                 className="w-7 h-7 bg-darkBg border border-darkBorder rounded-lg items-center justify-center"
-                                onPress={() => handleQuantityChange(service.id, -1)}
+                                onPress={() =>
+                                  handleQuantityChange(service.id, -1)
+                                }
                               >
-                                <Text className="text-xs font-bold text-white">-</Text>
+                                <Text className="text-xs font-bold text-white">
+                                  -
+                                </Text>
                               </TouchableOpacity>
                               <Text className="text-xs font-bold text-white px-3">
                                 {selectedItem.quantity}
                               </Text>
                               <TouchableOpacity
                                 className="w-7 h-7 bg-darkBg border border-darkBorder rounded-lg items-center justify-center"
-                                onPress={() => handleQuantityChange(service.id, 1)}
+                                onPress={() =>
+                                  handleQuantityChange(service.id, 1)
+                                }
                               >
-                                <Text className="text-xs font-bold text-white">+</Text>
+                                <Text className="text-xs font-bold text-white">
+                                  +
+                                </Text>
                               </TouchableOpacity>
                             </View>
                           )}
@@ -377,7 +449,6 @@ export const CreateOrder = ({
                 )}
               </View>
 
-              {/* Section 4: Ringkasan Total Tagihan Order */}
               <View className="bg-darkBg rounded-2xl p-4 border border-darkBorder mb-5 flex-row justify-between items-center">
                 <View>
                   <Text className="text-xs text-neutral-400 font-medium">
@@ -392,7 +463,6 @@ export const CreateOrder = ({
                 </Text>
               </View>
 
-              {/* Tombol Aksi */}
               <View className="flex-row justify-end space-x-3 pt-2 border-t border-darkBorder mb-3">
                 <TouchableOpacity
                   className="px-5 py-3 rounded-xl bg-darkBg border border-darkBorder mr-2"

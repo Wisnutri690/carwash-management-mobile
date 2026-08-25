@@ -11,7 +11,9 @@ import type { Order, OrderStatus, PaymentMethod } from "../../types/order";
 import {
   updateOrderStatus,
   updatePaymentStatus,
+  deleteOrder,
 } from "../../services/orderServices";
+import { InvoiceModal } from "./InvoiceModal";
 
 interface UpdateOrderStatusProps {
   visible: boolean;
@@ -27,6 +29,7 @@ export const UpdateOrder = ({
   onSuccess,
 }: UpdateOrderStatusProps) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isInvoiceVisible, setIsInvoiceVisible] = useState<boolean>(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("CASH");
 
@@ -77,6 +80,40 @@ export const UpdateOrder = ({
   if (!orderData) return null;
 
   const isPaid = orderData.paymentStatus === "PAID";
+
+  const handleDeleteOrder = () => {
+    if (!orderData) return;
+
+    Alert.alert(
+      "Konfirmasi Hapus",
+      `Apakah Anda yakin ingin menghapus transaksi order untuk kendaraan ${orderData.vehicle?.plateNumber || ""}?`,
+      [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              setIsSubmitting(true);
+              await deleteOrder(orderData.id);
+              Alert.alert("Berhasil", "Transaksi order berhasil dihapus!");
+              onSuccess();
+              onClose();
+            } catch (error: any) {
+              console.log("Delete Order Error:", error);
+              const errorMsg =
+                error?.response?.data?.message ||
+                error.message ||
+                "Gagal menghapus transaksi order.";
+              Alert.alert("Gagal", errorMsg);
+            } finally {
+              setIsSubmitting(false);
+            }
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <Modal
@@ -219,6 +256,28 @@ export const UpdateOrder = ({
               </TouchableOpacity>
             </View>
           )}
+
+          <TouchableOpacity
+            className="w-full py-3 bg-neonPurple/15 border border-neonPurple/40 rounded-xl items-center justify-center mb-2"
+            onPress={() => setIsInvoiceVisible(true)}
+            activeOpacity={0.7}
+          >
+            <Text className="text-xs font-bold text-neonPurple">
+              Lihat Nota Invoice
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            className="w-full py-3 bg-red-500/10 border border-red-500/30 rounded-xl items-center justify-center mb-2"
+            onPress={handleDeleteOrder}
+            disabled={isSubmitting}
+            activeOpacity={0.7}
+          >
+            <Text className="text-xs font-bold text-red-400">
+              Hapus Transaksi Order
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             className="w-full py-3 items-center justify-center"
             onPress={onClose}
@@ -227,6 +286,11 @@ export const UpdateOrder = ({
               Tutup
             </Text>
           </TouchableOpacity>
+          <InvoiceModal
+            visible={isInvoiceVisible}
+            orderId={orderData.id}
+            onClose={() => setIsInvoiceVisible(false)}
+          />
         </TouchableOpacity>
       </TouchableOpacity>
     </Modal>

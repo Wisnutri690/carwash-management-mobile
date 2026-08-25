@@ -1,5 +1,7 @@
 import api from '../config/api';
 import type { Order, OrderResponse, OrderStatus, PaymentMethod, PaymentStatus } from '../types/order';
+import type { Invoice, InvoiceResponse } from '../types/invoice';
+
 
 export interface CreateOrderInput {
     serviceId: string | number;
@@ -39,6 +41,15 @@ export const updateOrderStatus = async (id: string | number, status: OrderStatus
 
 export const updatePaymentStatus = async ( id: string | number, payload: UpdatePaymentPayload ): Promise<Order> => {
     const response = await api.post<{ success: boolean; message: string; data: Order }>(`/orders/${id}/payment`, payload);
+    return response.data.data;
+};
+
+export const deleteOrder = async (id: string | number): Promise<void> => {
+    await api.delete(`/orders/${id}`);
+};
+
+export const getOrderInvoice = async (orderId: string | number): Promise<Invoice> => {
+    const response = await api.get<InvoiceResponse>(`/orders/${orderId}/invoice`);
     return response.data.data;
 };
 
