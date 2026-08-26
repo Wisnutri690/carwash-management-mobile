@@ -20,7 +20,7 @@ interface UpdateOrderStatusProps {
   orderData: Order | null;
   onClose: () => void;
   onSuccess: () => void;
-}
+}  
 
 export const UpdateOrder = ({
   visible,

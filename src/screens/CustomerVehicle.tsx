@@ -220,6 +220,7 @@ export const CustomerVehicleScreen = () => {
 
       <CreateCustomerVehicle
         visible={isCreateModalVisible}
+        customer={customers}
         onClose={() => setIsCreateModalVisible(false)}
         onSuccess={fetchData}
       />

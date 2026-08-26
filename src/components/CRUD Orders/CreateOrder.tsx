@@ -112,23 +112,11 @@ export const CreateOrder = ({
     });
   };
 
-  const handleQuantityChange = (serviceId: string | number, delta: number) => {
-    setSelectedItems((prev) =>
-      prev.map((item) => {
-        if (String(item.serviceId) === String(serviceId)) {
-          const newQty = Math.max(1, item.quantity + delta);
-          return { ...item, quantity: newQty };
-        }
-        return item;
-      }),
-    );
-  };
-
   const calculatedTotalPrice = services.reduce((sum, srv) => {
     const item = selectedItems.find(
       (i) => String(i.serviceId) === String(srv.id),
     );
-    return sum + (item ? Number(srv.price) * item.quantity : 0);
+    return sum + (item ? Number(srv.price) : 0);
   }, 0);
 
   const formatCurrency = (amount: number) => {
@@ -371,78 +359,54 @@ export const CreateOrder = ({
                       const isSelected = !!selectedItem;
 
                       return (
-                        <View
+                        <TouchableOpacity
                           key={service.id}
                           className={`p-3 rounded-2xl border flex-row justify-between items-center ${
                             isSelected
                               ? "bg-neonPurple/15 border-neonPurple"
                               : "bg-darkBg border-darkBorder"
                           }`}
+                          onPress={() => handleToggleService(service.id)}
+                          activeOpacity={0.7}
                         >
-                          <TouchableOpacity
-                            className="flex-1 mr-3"
-                            onPress={() => handleToggleService(service.id)}
-                            activeOpacity={0.7}
-                          >
-                            <View className="flex-row items-center">
-                              <View
-                                className={`w-4 h-4 rounded-md mr-2.5 border items-center justify-center ${
+                          <View className="flex-row items-center flex-1">
+                            <View
+                              className={`w-4 h-4 rounded-md mr-2.5 border items-center justify-center ${
+                                isSelected
+                                  ? "bg-neonPurple border-neonPurple"
+                                  : "border-neutral-600"
+                              }`}
+                            >
+                              {isSelected && (
+                                <Text className="text-[10px] font-bold text-white">
+                                  ✓
+                                </Text>
+                              )}
+                            </View>
+                            <View className="flex-1">
+                              <Text
+                                className={`text-xs font-bold ${
                                   isSelected
-                                    ? "bg-neonPurple border-neonPurple"
-                                    : "border-neutral-600"
+                                    ? "text-white"
+                                    : "text-neutral-300"
                                 }`}
                               >
-                                {isSelected && (
-                                  <Text className="text-[10px] font-bold text-white">
-                                    ✓
-                                  </Text>
-                                )}
-                              </View>
-                              <View>
-                                <Text
-                                  className={`text-xs font-bold ${
-                                    isSelected
-                                      ? "text-white"
-                                      : "text-neutral-300"
-                                  }`}
-                                >
-                                  {service.name}
-                                </Text>
-                                <Text className="text-[10px] text-neonPurple font-semibold mt-0.5">
-                                  {formatCurrency(Number(service.price))}
-                                </Text>
-                              </View>
+                                {service.name}
+                              </Text>
+                              <Text className="text-[10px] text-neonPurple font-semibold mt-0.5">
+                                {formatCurrency(Number(service.price))}
+                              </Text>
                             </View>
-                          </TouchableOpacity>
+                          </View>
 
                           {isSelected && (
-                            <View className="flex-row items-center bg-darkSurface rounded-xl border border-darkBorder p-1">
-                              <TouchableOpacity
-                                className="w-7 h-7 bg-darkBg border border-darkBorder rounded-lg items-center justify-center"
-                                onPress={() =>
-                                  handleQuantityChange(service.id, -1)
-                                }
-                              >
-                                <Text className="text-xs font-bold text-white">
-                                  -
-                                </Text>
-                              </TouchableOpacity>
-                              <Text className="text-xs font-bold text-white px-3">
-                                {selectedItem.quantity}
+                            <View className="bg-neonPurple/20 border border-neonPurple/40 px-2.5 py-1 rounded-lg">
+                              <Text className="text-[10px] font-bold text-neonPurple">
+                                Terpilih
                               </Text>
-                              <TouchableOpacity
-                                className="w-7 h-7 bg-darkBg border border-darkBorder rounded-lg items-center justify-center"
-                                onPress={() =>
-                                  handleQuantityChange(service.id, 1)
-                                }
-                              >
-                                <Text className="text-xs font-bold text-white">
-                                  +
-                                </Text>
-                              </TouchableOpacity>
                             </View>
                           )}
-                        </View>
+                        </TouchableOpacity>
                       );
                     })}
                   </View>
