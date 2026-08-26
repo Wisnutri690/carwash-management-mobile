@@ -12,7 +12,8 @@ export interface CreateOrderPayload {
     customerId: string | number;
     vehicleId: string | number;
     staffId?: string | number;
-    items: CreateOrderInput[];
+    items?: CreateOrderInput[];
+    services?: number[] | CreateOrderInput[];
 }
 
 export interface UpdatePaymentPayload {

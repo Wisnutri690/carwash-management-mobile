@@ -20,7 +20,7 @@ import { CreateCustomerVehicle } from "../components/CRUD CustomerVehicle/Create
 import { UpdateCustomerVehicle } from "../components/CRUD CustomerVehicle/UpdateCustomerVehicle";
 import { DeleteCustomerVehicle } from "../components/CRUD CustomerVehicle/DeleteCustomerVehicle";
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 5;
 
 export const CustomerVehicleScreen = () => {
   const navigation =

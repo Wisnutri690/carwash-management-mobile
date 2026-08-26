@@ -155,24 +155,35 @@ export const CreateOrder = ({
     try {
       setIsSubmitting(true);
       await createOrder({
-        customerId: selectedCustomerId,
-        vehicleId: selectedVehicleId,
+        customerId: Number(selectedCustomerId),
+        vehicleId: Number(selectedVehicleId),
         staffId: selectedStaffId ? Number(selectedStaffId) : undefined,
+        services: selectedItems.map((item) => ({
+          serviceId: Number(item.serviceId),
+          quantity: item.quantity || 1,
+        })),
         items: selectedItems.map((item) => ({
           serviceId: Number(item.serviceId),
-          quantity: item.quantity,
+          quantity: item.quantity || 1,
         })),
-      });
+      } as any);
       Alert.alert("Berhasil", "Transaksi order pencucian berhasil dibuat!");
       onSuccess();
       handleClose();
     } catch (error: any) {
-      console.log("Create Order Error:", error);
+      console.log("Create Order Error:", error?.response?.data || error);
+
+      const serverErrors = error?.response?.data?.errors;
+      const errorDetail = Array.isArray(serverErrors)
+        ? serverErrors.map((e: any) => `${e.path?.join(".")}: ${e.message}`).join("\n")
+        : "";
+
       const errorMsg =
         error?.response?.data?.message ||
         error.message ||
         "Gagal membuat transaksi order baru.";
-      Alert.alert("Gagal", errorMsg);
+
+      Alert.alert("Gagal", errorDetail ? `${errorMsg}\n\n${errorDetail}` : errorMsg);
     } finally {
       setIsSubmitting(false);
     }
