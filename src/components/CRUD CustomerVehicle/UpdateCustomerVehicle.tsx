@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Modal, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { updateCustomer } from '../../services/customerServices';
 import { updateVehicle } from '../../services/vehicleServices';
 import type { Customer } from '../../types/customer';
@@ -15,7 +15,6 @@ interface UpdateCustomerVehicleProps {
 }
 
 export const UpdateCustomerVehicle = ({ visible, mode, customerData, vehicleData, onClose, onSuccess }: UpdateCustomerVehicleProps) => {
-
     const [name, setName] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
     const [address, setAddress] = useState<string>('');
@@ -110,134 +109,133 @@ export const UpdateCustomerVehicle = ({ visible, mode, customerData, vehicleData
             animationType="slide"
             onRequestClose={onClose} >
             <KeyboardAvoidingView
-                className="flex-1 justify-end bg-black/80"
+                className="flex-1 justify-end bg-black/40"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
-                <View className="bg-darkSurface rounded-t-3xl border-t border-darkBorder max-h-[88%] p-5">
-                    <View className="flex-row justify-between items-center pb-3 border-b border-darkBorder mb-3">
+                <View className="bg-white rounded-t-3xl border-t border-neutral-200 max-h-[88%] p-6">
+                    <View className="flex-row justify-between items-center pb-4 border-b border-neutral-100 mb-4">
                         <View>
-                            <Text className="text-lg font-bold text-white">
-                                {mode === 'CUSTOMER' ? 'Edit Data Pelanggan' : 'Edit Data Kendaraan'}
+                            <Text className="text-lg font-black text-black">
+                                {mode === 'CUSTOMER' ? 'Edit Pelanggan' : 'Edit Kendaraan'}
                             </Text>
-                            <Text className="text-xs text-neutral-400 mt-0.5">
-                                Perbarui informasi data yang tersimpan
+                            <Text className="text-xs text-neutral-400 font-mono mt-0.5 uppercase">
+                                Perbarui Informasi
                             </Text>
                         </View>
                         <TouchableOpacity
-                            className="w-8 h-8 rounded-full bg-darkBg border border-darkBorder items-center justify-center"
                             onPress={onClose}
                             activeOpacity={0.7} >
-                            <Text className="text-neutral-400 font-bold text-sm">✕</Text>
+                            <Text className="text-neutral-400 text-sm font-mono uppercase">Tutup</Text>
                         </TouchableOpacity>
                     </View>
 
                     <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
                         {mode === 'CUSTOMER' ? (
-                            <>
+                            <View className="space-y-4">
                                 <View className="mb-3">
-                                    <Text className="text-xs font-semibold text-neutral-300 mb-1">
+                                    <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
                                         Nama Lengkap *
                                     </Text>
                                     <TextInput
-                                        className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                        className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                         placeholder="Nama Lengkap"
-                                        placeholderTextColor="#737373"
+                                        placeholderTextColor="#a3a3a3"
                                         value={name}
                                         onChangeText={setName} />
                                 </View>
                                 <View className="mb-3">
-                                    <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                                        No. WhatsApp / HP *
+                                    <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                                        Nomor Telepon *
                                     </Text>
                                     <TextInput
-                                        className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                        className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                         placeholder="Nomor Telepon"
-                                        placeholderTextColor="#737373"
+                                        placeholderTextColor="#a3a3a3"
                                         keyboardType="phone-pad"
                                         value={phone}
                                         onChangeText={setPhone} />
                                 </View>
-                                <View className="mb-4">
-                                    <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                                        Alamat (Opsional)
+                                <View className="mb-3">
+                                    <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                                        Alamat
                                     </Text>
                                     <TextInput
-                                        className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                        className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                         placeholder="Alamat Pelanggan"
-                                        placeholderTextColor="#737373"
+                                        placeholderTextColor="#a3a3a3"
                                         value={address}
                                         onChangeText={setAddress} />
                                 </View>
-                            </>
+                            </View>
                         ) : (
-                            <>
+                            <View className="space-y-4">
                                 <View className="mb-3">
-                                    <Text className="text-xs font-semibold text-neutral-300 mb-1">
+                                    <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
                                         Plat Nomor *
                                     </Text>
                                     <TextInput
-                                        className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm font-mono uppercase"
+                                        className="h-10 border-b border-neutral-200 text-black text-sm font-mono uppercase px-0"
                                         placeholder="Plat Nomor"
-                                        placeholderTextColor="#737373"
+                                        placeholderTextColor="#a3a3a3"
                                         autoCapitalize="characters"
                                         value={plateNumber}
                                         onChangeText={setPlateNumber} />
                                 </View>
-                                <View className="flex-row space-x-3 mb-3">
-                                    <View className="flex-1 mr-2">
-                                        <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                                            Merk / Brand *
+                                <View className="flex-row gap-4 mb-3">
+                                    <View className="flex-1">
+                                        <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                                            Merk *
                                         </Text>
                                         <TextInput
-                                            className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                            className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                             placeholder="Merk"
-                                            placeholderTextColor="#737373"
+                                            placeholderTextColor="#a3a3a3"
                                             value={brand}
                                             onChangeText={setBrand} />
                                     </View>
                                     <View className="flex-1">
-                                        <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                                            Tipe / Model *
+                                        <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                                            Model *
                                         </Text>
                                         <TextInput
-                                            className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                            className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                             placeholder="Model"
-                                            placeholderTextColor="#737373"
+                                            placeholderTextColor="#a3a3a3"
                                             value={model}
                                             onChangeText={setModel} />
                                     </View>
                                 </View>
-                                <View className="mb-4">
-                                    <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                                        Warna Kendaraan (Opsional)
+                                <View className="mb-3">
+                                    <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                                        Warna
                                     </Text>
                                     <TextInput
-                                        className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                        className="h-10 border-b border-neutral-200 text-black text-sm px-0"
                                         placeholder="Warna"
-                                        placeholderTextColor="#737373"
+                                        placeholderTextColor="#a3a3a3"
                                         value={color}
                                         onChangeText={setColor} />
                                 </View>
-                            </>
+                            </View>
                         )}
                     </ScrollView>
 
-                    <View className="flex-row justify-end space-x-3 pt-2 border-t border-darkBorder">
+                    <View className="pt-3 border-t border-neutral-100 flex-row justify-end items-center gap-3">
                         <TouchableOpacity
-                            className="px-5 py-3 rounded-xl bg-darkBg border border-darkBorder mr-2"
                             onPress={onClose}
                             disabled={isSubmitting}
+                            className="py-2.5 px-4"
                             activeOpacity={0.7} >
-                            <Text className="text-neutral-400 font-bold text-xs px-2 text-center">Batal</Text>
+                            <Text className="text-neutral-400 font-mono text-xs uppercase">Batal</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
-                            className="px-6 py-3 rounded-xl bg-neonPurple"
+                            className="bg-black py-2.5 px-6 rounded-full"
                             onPress={handleSubmit}
                             disabled={isSubmitting}
-                            activeOpacity={0.8} >
+                            activeOpacity={0.85} >
                             {isSubmitting ? (
                                 <ActivityIndicator size="small" color="#ffffff" />
                             ) : (
-                                <Text className="text-white font-bold text-xs px-2 text-center">
+                                <Text className="text-white font-bold text-xs">
                                     Simpan Perubahan
                                 </Text>
                             )}

@@ -17,6 +17,8 @@ import { ReadOrder } from "../components/CRUD Orders/ReadOrder";
 import { UpdateOrder } from "../components/CRUD Orders/UpdateOrder";
 import { CreateOrder } from "../components/CRUD Orders/CreateOrder";
 
+const ITEMS_PER_PAGE = 5;
+
 export const OrderScreen = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -26,6 +28,7 @@ export const OrderScreen = () => {
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | "ALL">(
     "ALL",
   );
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isCreateModalVisible, setIsCreateModalVisible] = useState<boolean>(false);
@@ -49,13 +52,16 @@ export const OrderScreen = () => {
       setIsRefreshing(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
+
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
     fetchData();
   }, []);
+
   const filteredOrders = orders.filter((ord) => {
     const matchesStatus =
       selectedStatus === "ALL" || ord.status === selectedStatus;
@@ -69,61 +75,112 @@ export const OrderScreen = () => {
 
   const handleSearch = (text: string) => {
     setSearchQuery(text);
+    setCurrentPage(1);
   };
 
-  return (
-    <SafeAreaView className="flex-1 bg-darkBg" edges={["top", "left", "right"]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
 
-      <View className="px-5 pt-3 pb-4 bg-darkSurface border-b border-darkBorder">
-        <View className="flex-row justify-start mb-3">
+  const handleStatusChange = (status: OrderStatus | "ALL") => {
+    setSelectedStatus(status);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+
+      <View className="px-6 py-4 border-b border-neutral-100 flex-row justify-between items-center">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
-            className="px-3.5 py-2 bg-darkBg border border-darkBorder rounded-xl items-center justify-center"
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
           >
-            <Text className="text-neonPurple font-bold text-xs">
-              Kembali
-            </Text>
+            <Text className="text-black text-base font-bold">←</Text>
           </TouchableOpacity>
+          <Text className="text-lg font-black text-black tracking-tight">
+            Transaksi Order
+          </Text>
         </View>
 
-        <Text className="text-lg font-bold text-white">
-          Order Pencucian
-        </Text>
-      </View>
-
-      <View className="p-4 bg-darkBg border-b border-darkBorder flex-row items-center">
-        <TextInput
-          className="flex-1 h-11 bg-darkSurface border border-darkBorder rounded-xl px-4 text-white text-sm mr-3"
-          placeholder="Cari no. plat atau pelanggan..."
-          placeholderTextColor="#737373"
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
-
         <TouchableOpacity
-          className="h-11 bg-purple-900 px-4 rounded-xl items-center justify-center"
+          className="bg-black px-4 py-2 rounded-full items-center justify-center"
           onPress={() => setIsCreateModalVisible(true)}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
-          <Text className="text-white font-bold text-xs px-1 text-center">
+          <Text className="text-white font-bold text-xs">
             + Tambah
           </Text>
         </TouchableOpacity>
       </View>
 
-      <View className="flex-1">
+      <View className="px-6 py-2 border-b border-neutral-100 flex-row items-center justify-between">
+        <TextInput
+          className="h-10 text-black text-sm px-0 flex-1 mr-2"
+          placeholder="Cari plat nomor atau nama pelanggan..."
+          placeholderTextColor="#a3a3a3"
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            onPress={handleClearSearch}
+            className="w-6 h-6 rounded-full items-center justify-center"
+            activeOpacity={0.7}
+          >
+            <Text className="text-neutral-400 font-mono text-xs">✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <View className="flex-1 bg-white">
         <ReadOrder
-          orders={filteredOrders}
+          orders={paginatedOrders}
           isLoading={isLoading}
           isRefreshing={isRefreshing}
           onRefresh={onRefresh}
           selectedStatus={selectedStatus}
-          onSelectedStatus={setSelectedStatus}
+          onSelectedStatus={handleStatusChange}
           onSelectedOrderAction={(order) => setSelectedOrderAction(order)}
         />
       </View>
+
+      {filteredOrders.length > 0 && (
+        <View className="flex-row justify-between items-center px-6 py-3 border-t border-neutral-100">
+          <TouchableOpacity
+            className={`py-1.5 ${currentPage === 1 ? "opacity-30" : "opacity-100"}`}
+            onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            activeOpacity={0.7}
+          >
+            <Text className="text-black font-mono text-xs uppercase">Sebelumnya</Text>
+          </TouchableOpacity>
+
+          <Text className="text-xs font-mono text-neutral-400">
+            {currentPage} / {totalPages}
+          </Text>
+
+          <TouchableOpacity
+            className={`py-1.5 ${currentPage === totalPages ? "opacity-30" : "opacity-100"}`}
+            onPress={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+            activeOpacity={0.7}
+          >
+            <Text className="text-black font-mono text-xs uppercase">Selanjutnya</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <CreateOrder
         visible={isCreateModalVisible}

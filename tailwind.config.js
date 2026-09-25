@@ -8,12 +8,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        darkBg: "#0a0a0a",
-        darkSurface: "#121212",
-        darkInput: "#1a1a1a",
-        darkBorder: "#262626",
-        neonPurple: "#a855f7",
-        neonPink: "#fc00e7",
+        pureBlack: "#000000",
+        pureWhite: "#ffffff",
+        subtleGray: "#f4f4f5",
+        lineGray: "#e4e4e7",
+        mutedGray: "#71717a",
       },
     },
   },

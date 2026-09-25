@@ -34,39 +34,35 @@ export const LoginScreen = () => {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-darkBg" edges={['top', 'left', 'right']}>
-            <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+        <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
             <KeyboardAvoidingView
                 className="flex-1"
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined} >
                 <ScrollView
-                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', paddingHorizontal: 28 }}
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}>
-                    <View className="items-center mb-8">
-                        <View className="flex-row items-center justify-center mb-2">
-                            <Text className="text-3xl font-bold text-white tracking-widest mr-2">
-                                APEX
-                            </Text>
-                            <Text className="text-3xl font-bold text-neonPink tracking-widest">
-                                CARWASH
-                            </Text>
-                        </View>
-                        <Text className="text-xs text-neutral-400 text-center">
-                            Portal Administrator Operasional & Layanan
+                    
+                    <View className="mb-12">
+                        <Text className="text-3xl font-black text-black tracking-tight">
+                            APEX CARWASH
+                        </Text>
+                        <Text className="text-xs text-neutral-400 font-mono tracking-widest uppercase mt-1">
+                            Administrator Console
                         </Text>
                     </View>
 
-                    <View className="bg-darkSurface rounded-3xl p-6 border border-darkBorder">
-                        <View className="mb-4">
-                            <Text className="text-xs font-semibold text-neutral-300 mb-2">
-                                Email Admin
+                    <View className="space-y-6">
+                        <View className="mb-5">
+                            <Text className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+                                Email
                             </Text>
                             <TextInput
-                                className="h-12 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
+                                className="h-12 border-b border-neutral-200 px-0 text-black text-base"
                                 placeholder="admin@apexcarwash.com"
-                                placeholderTextColor="#737373"
+                                placeholderTextColor="#a3a3a3"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
@@ -74,14 +70,14 @@ export const LoginScreen = () => {
                                 editable={!isSubmitting} />
                         </View>
 
-                        <View className="mb-4">
-                            <Text className="text-xs font-semibold text-neutral-300 mb-2">
+                        <View className="mb-8">
+                            <Text className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
                                 Password
                             </Text>
                             <TextInput
-                                className="h-12 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                                placeholder="Masukkan password"
-                                placeholderTextColor="#737373"
+                                className="h-12 border-b border-neutral-200 px-0 text-black text-base"
+                                placeholder="••••••••"
+                                placeholderTextColor="#a3a3a3"
                                 secureTextEntry
                                 value={password}
                                 onChangeText={setPassword}
@@ -89,15 +85,15 @@ export const LoginScreen = () => {
                         </View>
 
                         <TouchableOpacity
-                            className={`h-12 rounded-xl items-center justify-center mt-2 ${isSubmitting ? 'bg-neonPurple/50' : 'bg-neonPurple'}`}
+                            className="h-13 bg-black rounded-full items-center justify-center"
                             onPress={handleLogin}
                             disabled={isSubmitting}
-                            activeOpacity={0.8}>
+                            activeOpacity={0.85}>
                             {isSubmitting ? (
-                                <ActivityIndicator color="#ffffff" />
+                                <ActivityIndicator color="#ffffff" size="small" />
                             ) : (
                                 <Text className="text-white font-bold text-sm tracking-wide">
-                                    Login
+                                    Masuk
                                 </Text>
                             )}
                         </TouchableOpacity>

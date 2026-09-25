@@ -59,6 +59,11 @@ export const CustomerVehicleScreen = () => {
     setCurrentPage(1);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
+  };
+
   const handleOpenEditCustomer = (customer: Customer) => {
     setSelectedCustomer(customer);
     setSelectedVehicle(null);
@@ -133,48 +138,53 @@ export const CustomerVehicleScreen = () => {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-darkBg" edges={["top", "left", "right"]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      <View className="px-5 pt-3 pb-4 bg-darkSurface border-b border-darkBorder">
-        <View className="flex-row justify-start mb-3">
+      <View className="px-6 py-4 border-b border-neutral-100 flex-row justify-between items-center">
+        <View className="flex-row items-center gap-3">
           <TouchableOpacity
-            className="px-3.5 py-2 bg-darkBg border border-darkBorder rounded-xl items-center justify-center"
             onPress={() => navigation.goBack()}
             activeOpacity={0.7}
           >
-            <Text className="text-neonPurple font-bold text-xs tracking-wide">
-              Kembali
-            </Text>
+            <Text className="text-black text-base font-bold">←</Text>
           </TouchableOpacity>
+          <Text className="text-lg font-black text-black tracking-tight">
+            Pelanggan & Unit
+          </Text>
         </View>
 
-        <Text className="text-lg font-bold text-white tracking-wide">
-          Customer & Vehicle
-        </Text>
-      </View>
-
-      <View className="p-4 bg-darkBg border-b border-darkBorder flex-row items-center">
-        <TextInput
-          className="flex-1 h-11 bg-darkSurface border border-darkBorder rounded-xl px-4 text-white text-sm mr-3"
-          placeholder="Cari nama atau no. telepon..."
-          placeholderTextColor="#737373"
-          value={searchQuery}
-          onChangeText={handleSearch}
-        />
-
         <TouchableOpacity
-          className="h-11 bg-purple-900 px-4 rounded-xl items-center justify-center"
+          className="bg-black px-4 py-2 rounded-full items-center justify-center"
           onPress={() => setIsCreateModalVisible(true)}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
-          <Text className="text-white font-bold text-xs tracking-wide">
+          <Text className="text-white font-bold text-xs">
             + Tambah
           </Text>
         </TouchableOpacity>
       </View>
 
-      <View className="flex-1">
+      <View className="px-6 py-2 border-b border-neutral-100 flex-row items-center justify-between">
+        <TextInput
+          className="h-10 text-black text-sm px-0 flex-1 mr-2"
+          placeholder="Cari nama atau nomor telepon..."
+          placeholderTextColor="#a3a3a3"
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity
+            onPress={handleClearSearch}
+            className="w-6 h-6 rounded-full items-center justify-center"
+            activeOpacity={0.7}
+          >
+            <Text className="text-neutral-400 font-mono text-xs">✕</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <View className="flex-1 bg-white">
         <ReadCustomerVehicle
           customers={paginatedCustomers}
           vehicles={vehicles}
@@ -190,30 +200,29 @@ export const CustomerVehicleScreen = () => {
       </View>
 
       {filteredCustomers.length > 0 && (
-        <View className="flex-row justify-between items-center px-5 py-3.5 bg-darkSurface border-t border-darkBorder">
+        <View className="flex-row justify-between items-center px-6 py-3 border-t border-neutral-100">
           <TouchableOpacity
-            className={`px-4 py-2 rounded-xl bg-darkBg border border-darkBorder ${currentPage === 1 ? "opacity-40" : "opacity-100"}`}
+            className={`py-1.5 ${currentPage === 1 ? "opacity-30" : "opacity-100"}`}
             onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
             activeOpacity={0.7}
           >
-            <Text className="text-white font-bold text-xs">Sebelumnya</Text>
+            <Text className="text-black font-mono text-xs uppercase">Sebelumnya</Text>
           </TouchableOpacity>
 
-          <Text className="text-xs font-semibold text-neutral-400">
-            <Text className="text-neonPurple font-bold">{currentPage}</Text>{" "}
-            dari <Text className="text-white font-bold">{totalPages}</Text>
+          <Text className="text-xs font-mono text-neutral-400">
+            {currentPage} / {totalPages}
           </Text>
 
           <TouchableOpacity
-            className={`px-4 py-2 rounded-xl bg-darkBg border border-darkBorder ${currentPage === totalPages ? "opacity-40" : "opacity-100"}`}
+            className={`py-1.5 ${currentPage === totalPages ? "opacity-30" : "opacity-100"}`}
             onPress={() =>
               setCurrentPage((prev) => Math.min(prev + 1, totalPages))
             }
             disabled={currentPage === totalPages}
             activeOpacity={0.7}
           >
-            <Text className="text-white font-bold text-xs">Selanjutnya</Text>
+            <Text className="text-black font-mono text-xs uppercase">Selanjutnya</Text>
           </TouchableOpacity>
         </View>
       )}

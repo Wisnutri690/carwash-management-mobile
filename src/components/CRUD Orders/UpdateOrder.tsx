@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,7 +20,7 @@ interface UpdateOrderStatusProps {
   orderData: Order | null;
   onClose: () => void;
   onSuccess: () => void;
-}  
+}
 
 export const UpdateOrder = ({
   visible,
@@ -30,8 +30,22 @@ export const UpdateOrder = ({
 }: UpdateOrderStatusProps) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isInvoiceVisible, setIsInvoiceVisible] = useState<boolean>(false);
+  const [activeView, setActiveView] = useState<"MENU" | "STATUS" | "PAYMENT">(
+    "MENU",
+  );
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState<PaymentMethod>("CASH");
+
+  useEffect(() => {
+    if (visible) {
+      setActiveView("MENU");
+    }
+  }, [visible]);
+
+  const handleCloseAll = () => {
+    setActiveView("MENU");
+    onClose();
+  };
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (!orderData) return;
@@ -39,15 +53,15 @@ export const UpdateOrder = ({
     try {
       setIsSubmitting(true);
       await updateOrderStatus(orderData.id, newStatus);
-      Alert.alert("Berhasil", "Status order berhasil diperbaharui!");
+      Alert.alert("Berhasil", "Status order berhasil diperbarui.");
       onSuccess();
-      onClose();
+      handleCloseAll();
     } catch (error: any) {
       console.log("Update Status Error:", error);
       const errorMsg =
         error?.response?.data?.message ||
         error.message ||
-        "Gagal memperbaharui status order";
+        "Gagal memperbarui status order";
       Alert.alert("Gagal", errorMsg);
     } finally {
       setIsSubmitting(false);
@@ -62,9 +76,9 @@ export const UpdateOrder = ({
         paymentStatus: "PAID",
         paymentMethod: selectedPaymentMethod,
       });
-      Alert.alert("Berhasil", `Pembayaran via ${selectedPaymentMethod}`);
+      Alert.alert("Berhasil", `Pembayaran via ${selectedPaymentMethod} tercatat.`);
       onSuccess();
-      onClose();
+      handleCloseAll();
     } catch (error: any) {
       console.log("Update Payment Error:", error);
       const errorMsg =
@@ -86,7 +100,7 @@ export const UpdateOrder = ({
 
     Alert.alert(
       "Konfirmasi Hapus",
-      `Apakah Anda yakin ingin menghapus transaksi order untuk kendaraan ${orderData.vehicle?.plateNumber || ""}?`,
+      `Hapus transaksi order kendaraan ${orderData.vehicle?.plateNumber || ""}?`,
       [
         { text: "Batal", style: "cancel" },
         {
@@ -96,9 +110,9 @@ export const UpdateOrder = ({
             try {
               setIsSubmitting(true);
               await deleteOrder(orderData.id);
-              Alert.alert("Berhasil", "Transaksi order berhasil dihapus!");
+              Alert.alert("Berhasil", "Order berhasil dihapus.");
               onSuccess();
-              onClose();
+              handleCloseAll();
             } catch (error: any) {
               console.log("Delete Order Error:", error);
               const errorMsg =
@@ -120,172 +134,223 @@ export const UpdateOrder = ({
       visible={visible}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={handleCloseAll}
     >
       <TouchableOpacity
-        className="flex-1 bg-black/60 justify-end"
+        className="flex-1 bg-black/40 justify-end"
         activeOpacity={1}
-        onPress={onClose}
+        onPress={handleCloseAll}
       >
         <TouchableOpacity
-          className="bg-darkSurface border-t border-darkBorder rounded-t-3xl p-5 max-h-[85%]"
+          className="bg-white border-t border-neutral-200 rounded-t-3xl p-6"
           activeOpacity={1}
           onPress={(e) => e.stopPropagation()}
         >
-          <View className="items-center mb-4">
-            <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-            <Text className="w-full text-center text-xs text-neutral-400 uppercase font-semibold px-4">
-              Kelola Order & Pembayaran
-            </Text>
-            <Text className="w-full text-center text-base font-bold text-white font-mono px-4 mt-0.5">
-              {orderData.vehicle?.plateNumber || "NO PLAT"}
-            </Text>
-            <Text className="w-full text-center text-xs text-neonPurple font-medium px-4 mt-0.5">
-              {orderData.customer?.name || "Customer"}
-            </Text>
-          </View>
-
-          <Text className="text-xs font-bold text-neutral-400 uppercase mb-2">
-            1. Ubah Status Pengerjaan:
-          </Text>
-          <View className="flex-row flex-wrap gap-2 mb-4">
-            <TouchableOpacity
-              className={`flex-1 min-w-[45%] p-3 rounded-xl border ${
-                orderData.status === "WAITING"
-                  ? "bg-amber-500/20 border-amber-500"
-                  : "bg-darkBg border-darkBorder"
-              }`}
-              onPress={() => handleStatusChange("WAITING")}
-              disabled={isSubmitting}
-            >
-              <Text className="text-xs font-bold text-amber-400 text-center">
-                Menunggu
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-1 min-w-[45%] p-3 rounded-xl border ${
-                orderData.status === "IN_PROGRESS"
-                  ? "bg-blue-500/20 border-blue-500"
-                  : "bg-darkBg border-darkBorder"
-              }`}
-              onPress={() => handleStatusChange("IN_PROGRESS")}
-              disabled={isSubmitting}
-            >
-              <Text className="text-xs font-bold text-blue-400 text-center">
-                Sedang Dicuci
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-1 min-w-[45%] p-3 rounded-xl border ${
-                orderData.status === "COMPLETED"
-                  ? "bg-emerald-500/20 border-emerald-500"
-                  : "bg-darkBg border-darkBorder"
-              }`}
-              onPress={() => handleStatusChange("COMPLETED")}
-              disabled={isSubmitting}
-            >
-              <Text className="text-xs font-bold text-emerald-400 text-center">
-                Selesai
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={`flex-1 min-w-[45%] p-3 rounded-xl border ${
-                orderData.status === "CANCELLED"
-                  ? "bg-red-500/20 border-red-500"
-                  : "bg-darkBg border-darkBorder"
-              }`}
-              onPress={() => handleStatusChange("CANCELLED")}
-              disabled={isSubmitting}
-            >
-              <Text className="text-xs font-bold text-red-400 text-center">
-                Batal
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <Text className="text-xs font-bold text-neutral-400 uppercase mb-2">
-            2. Pelunasan Pembayaran:
-          </Text>
-          {isPaid ? (
-            <View className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3.5 items-center mb-4">
-              <Text className="text-xs font-bold text-emerald-400">
-                Transaksi Sudah LUNAS ({orderData.paymentMethod || "CASH"})
-              </Text>
-            </View>
-          ) : (
-            <View className="mb-4">
-              <Text className="text-xs text-neutral-400 mb-2">
-                Pilih Metode Pembayaran:
-              </Text>
-              <View className="flex-row gap-2 mb-3">
-                {(["CASH", "QRIS", "TRANSFER"] as PaymentMethod[]).map(
-                  (method) => (
-                    <TouchableOpacity
-                      key={method}
-                      className={`flex-1 py-2.5 rounded-xl border items-center ${
-                        selectedPaymentMethod === method
-                          ? "bg-neonPurple/20 border-neonPurple"
-                          : "bg-darkBg border-darkBorder"
-                      }`}
-                      onPress={() => setSelectedPaymentMethod(method)}
-                    >
-                      <Text
-                        className={`text-xs font-bold ${
-                          selectedPaymentMethod === method
-                            ? "text-neonPurple"
-                            : "text-neutral-400"
-                        }`}
-                      >
-                        {method}
-                      </Text>
-                    </TouchableOpacity>
-                  ),
-                )}
+          {activeView === "MENU" && (
+            <View>
+              <View className="items-center mb-4">
+                <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                <Text className="text-base font-black text-black font-mono">
+                  {orderData.vehicle?.plateNumber || "NO PLAT"}
+                </Text>
+                <Text className="text-xs text-neutral-400 mt-0.5">
+                  {orderData.customer?.name || "Customer"}
+                </Text>
               </View>
+
               <TouchableOpacity
-                className="bg-emerald-600 rounded-xl p-3.5 items-center justify-center"
-                onPress={handlePaymentSubmit}
-                disabled={isSubmitting}
+                className="py-3.5 border-b border-neutral-100 flex-row justify-between items-center"
+                onPress={() => setActiveView("STATUS")}
+                activeOpacity={0.7}
               >
-                {isSubmitting ? (
-                  <ActivityIndicator size="small" color="#ffffff" />
-                ) : (
-                  <Text className="text-xs font-bold text-white">
-                    Bayar Via ({selectedPaymentMethod})
+                <Text className="text-sm font-bold text-black">
+                  Ubah Status Pengerjaan
+                </Text>
+                <Text className="text-neutral-400 text-sm font-mono">›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="py-3.5 border-b border-neutral-100 flex-row justify-between items-center"
+                onPress={() => setActiveView("PAYMENT")}
+                activeOpacity={0.7}
+              >
+                <View>
+                  <Text className="text-sm font-bold text-black">
+                    Pelunasan Pembayaran
                   </Text>
-                )}
+                  <Text className="text-[10px] font-mono text-neutral-400 uppercase mt-0.5">
+                    {isPaid ? "Status: Lunas" : "Status: Belum Bayar"}
+                  </Text>
+                </View>
+                <Text className="text-neutral-400 text-sm font-mono">›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="py-3.5 border-b border-neutral-100 flex-row justify-between items-center"
+                onPress={() => setIsInvoiceVisible(true)}
+                activeOpacity={0.7}
+              >
+                <Text className="text-sm font-bold text-black">
+                  Lihat Nota Invoice
+                </Text>
+                <Text className="text-neutral-400 text-sm font-mono">›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="py-3.5 border-b border-neutral-100 flex-row justify-between items-center"
+                onPress={handleDeleteOrder}
+                activeOpacity={0.7}
+              >
+                <Text className="text-sm font-bold text-red-600">
+                  Hapus Transaksi Order
+                </Text>
+                <Text className="text-neutral-400 text-sm font-mono">›</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="w-full py-4 items-center justify-center mt-1"
+                onPress={handleCloseAll}
+              >
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Batal
+                </Text>
               </TouchableOpacity>
             </View>
           )}
 
-          <TouchableOpacity
-            className="w-full py-3 bg-neonPurple/15 border border-neonPurple/40 rounded-xl items-center justify-center mb-2"
-            onPress={() => setIsInvoiceVisible(true)}
-            activeOpacity={0.7}
-          >
-            <Text className="text-xs font-bold text-neonPurple">
-              Lihat Nota Invoice
-            </Text>
-          </TouchableOpacity>
+          {activeView === "STATUS" && (
+            <View>
+              <View className="items-center mb-4">
+                <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Pilih Status Baru
+                </Text>
+                <Text className="text-sm font-black text-black font-mono mt-0.5">
+                  {orderData.vehicle?.plateNumber}
+                </Text>
+              </View>
 
-          <TouchableOpacity
-            className="w-full py-3 bg-red-500/10 border border-red-500/30 rounded-xl items-center justify-center mb-2"
-            onPress={handleDeleteOrder}
-            disabled={isSubmitting}
-            activeOpacity={0.7}
-          >
-            <Text className="text-xs font-bold text-red-400">
-              Hapus Transaksi Order
-            </Text>
-          </TouchableOpacity>
+              {[
+                { key: "WAITING", label: "Menunggu" },
+                { key: "IN_PROGRESS", label: "Sedang Dicuci" },
+                { key: "COMPLETED", label: "Selesai" },
+                { key: "CANCELLED", label: "Dibatalkan" },
+              ].map((st) => {
+                const isCurrent = orderData.status === st.key;
+                return (
+                  <TouchableOpacity
+                    key={st.key}
+                    className="py-3.5 border-b border-neutral-100 flex-row justify-between items-center"
+                    onPress={() => handleStatusChange(st.key as OrderStatus)}
+                    disabled={isSubmitting}
+                  >
+                    <Text
+                      className={`text-sm ${
+                        isCurrent ? "font-black text-black" : "font-medium text-neutral-600"
+                      }`}
+                    >
+                      {st.label}
+                    </Text>
+                    {isCurrent && (
+                      <Text className="text-xs font-mono font-bold text-black">
+                        ✓ Aktif
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
 
-          <TouchableOpacity
-            className="w-full py-3 items-center justify-center"
-            onPress={onClose}
-          >
-            <Text className="w-full text-center text-xs text-neutral-400 font-semibold px-4">
-              Tutup
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                className="w-full py-4 items-center justify-center mt-2"
+                onPress={() => setActiveView("MENU")}
+              >
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Kembali
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {activeView === "PAYMENT" && (
+            <View>
+              <View className="items-center mb-4">
+                <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Pelunasan Pembayaran
+                </Text>
+                <Text className="text-sm font-black text-black font-mono mt-0.5">
+                  {orderData.vehicle?.plateNumber}
+                </Text>
+              </View>
+
+              {isPaid ? (
+                <View className="py-6 items-center">
+                  <Text className="text-sm font-bold text-black mb-1">
+                    Transaksi Sudah Lunas
+                  </Text>
+                  <Text className="text-xs font-mono text-neutral-400">
+                    Metode: {orderData.paymentMethod || "CASH"}
+                  </Text>
+                </View>
+              ) : (
+                <View className="mb-4">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-2">
+                    Pilih Metode Bayar:
+                  </Text>
+                  <View className="flex-row gap-2 mb-4">
+                    {(["CASH", "QRIS", "TRANSFER"] as PaymentMethod[]).map(
+                      (method) => {
+                        const isSelected = selectedPaymentMethod === method;
+                        return (
+                          <TouchableOpacity
+                            key={method}
+                            className={`flex-1 py-2 rounded-xl border items-center ${
+                              isSelected
+                                ? "bg-black border-black"
+                                : "border-neutral-200"
+                            }`}
+                            onPress={() => setSelectedPaymentMethod(method)}
+                          >
+                            <Text
+                              className={`text-xs font-mono font-bold ${
+                                isSelected ? "text-white" : "text-black"
+                              }`}
+                            >
+                              {method}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      },
+                    )}
+                  </View>
+
+                  <TouchableOpacity
+                    className="bg-black py-3 rounded-full items-center justify-center"
+                    onPress={handlePaymentSubmit}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <ActivityIndicator size="small" color="#ffffff" />
+                    ) : (
+                      <Text className="text-xs font-bold text-white tracking-wider">
+                        Konfirmasi Lunas ({selectedPaymentMethod})
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              <TouchableOpacity
+                className="w-full py-4 items-center justify-center mt-1"
+                onPress={() => setActiveView("MENU")}
+              >
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Kembali
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           <InvoiceModal
             visible={isInvoiceVisible}
             orderId={orderData.id}

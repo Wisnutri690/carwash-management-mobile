@@ -62,7 +62,7 @@ export const DeleteCustomerVehicle = ({
         await deleteVehicle(String(vehicleData.id));
         Alert.alert(
           "Berhasil",
-          `Vehicle"${vehicleData.plateNumber}" berhasil dihapus`,
+          `Vehicle "${vehicleData.plateNumber}" berhasil dihapus`,
         );
         onSuccess();
         onClose();
@@ -91,38 +91,37 @@ export const DeleteCustomerVehicle = ({
       animationType="fade"
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-center items-center bg-black/80 px-5">
-        <View className="w-full bg-darkSurface rounded-3xl p-6 border border-darkBorder">
-          <Text className="text-lg font-bold text-white mb-2">
+      <View className="flex-1 justify-center items-center bg-black/40 px-6">
+        <View className="w-full bg-white rounded-2xl p-6 border border-neutral-200">
+          <Text className="text-base font-black text-black mb-2">
             {mode === "CUSTOMER"
-              ? "Hapus Data Pelanggan?"
-              : "Hapus Unit Kendaraan?"}
+              ? "Hapus Data Pelanggan"
+              : "Hapus Unit Kendaraan"}
           </Text>
-          <Text className="text-xs text-neutral-400 leading-5 mb-6">
+          <Text className="text-xs text-neutral-500 leading-5 mb-6">
             Apakah Anda yakin ingin menghapus{" "}
-            <Text className="text-white font-bold">{targetName}</Text>? Data
-            yang dihapus tidak dapat dikembalikan lagi.
+            <Text className="text-black font-bold">{targetName}</Text>? Tindakan ini tidak dapat dibatalkan.
           </Text>
-          <View className="flex-row justify-end space-x-3">
+          <View className="flex-row justify-end items-center gap-3">
             <TouchableOpacity
-              className="px-5 py-3 rounded-xl bg-darkBg border border-darkBorder mr-2"
               onPress={onClose}
               disabled={isDeleting}
+              className="py-2 px-4"
               activeOpacity={0.7}
             >
-              <Text className="text-neutral-400 font-bold text-xs px-2 text-center">Batal</Text>
+              <Text className="text-neutral-400 font-mono text-xs uppercase">Batal</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`px-5 py-3 rounded-xl ${isDeleting ? "bg-red-800" : "bg-red-600"}`}
+              className="bg-black py-2.5 px-5 rounded-full"
               onPress={handleDelete}
               disabled={isDeleting}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
             >
               {isDeleting ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-xs px-2 text-center">
-                  Ya, Hapus
+                <Text className="text-white font-bold text-xs">
+                  Hapus
                 </Text>
               )}
             </TouchableOpacity>
@@ -132,3 +131,5 @@ export const DeleteCustomerVehicle = ({
     </Modal>
   );
 };
+
+export default DeleteCustomerVehicle;

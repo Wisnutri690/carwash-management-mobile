@@ -148,33 +148,33 @@ export const CreateCustomerVehicle = ({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        className="flex-1 justify-end bg-black/80"
+        className="flex-1 justify-end bg-black/40"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="bg-darkSurface rounded-t-3xl border-t border-darkBorder max-h-[88%] p-5">
-          <View className="flex-row justify-between items-center pb-3 border-b border-darkBorder mb-3">
+        <View className="bg-white rounded-t-3xl border-t border-neutral-200 max-h-[88%] p-6">
+          <View className="flex-row justify-between items-center pb-4 border-b border-neutral-100 mb-4">
             <View>
-              <Text className="text-lg font-bold text-white">
-                Tambah Pelanggan & Unit
+              <Text className="text-lg font-black text-black">
+                Tambah Data
               </Text>
-              <Text className="text-xs text-neutral-400 mt-0.5">
-                Daftarkan pemilik dan unit kendaraan baru
+              <Text className="text-xs text-neutral-400 font-mono mt-0.5 uppercase">
+                Customer & Unit
               </Text>
             </View>
             <TouchableOpacity
-              className="w-8 h-8 rounded-full bg-darkBg border border-darkBorder items-center justify-center"
               onPress={handleClose}
               activeOpacity={0.7}
             >
-              <Text className="text-neutral-400 font-bold text-sm">✕</Text>
+              <Text className="text-neutral-400 text-sm font-mono uppercase">Tutup</Text>
             </TouchableOpacity>
           </View>
-          <View className="flex-row bg-darkBg p-1 rounded-xl border border-darkBorder mb-3">
+
+          <View className="flex-row border-b border-neutral-100 mb-4">
             <TouchableOpacity
-              className={`flex-1 py-2 rounded-lg items-center ${
+              className={`pb-2.5 mr-6 ${
                 registrationMode === "NEW_CUSTOMER"
-                  ? "bg-neonPurple"
-                  : "bg-transparent"
+                  ? "border-b-2 border-black"
+                  : "opacity-40"
               }`}
               onPress={() => {
                 setRegistrationMode("NEW_CUSTOMER");
@@ -182,104 +182,82 @@ export const CreateCustomerVehicle = ({
               }}
               activeOpacity={0.8}
             >
-              <Text
-                className={`text-xs font-bold ${
-                  registrationMode === "NEW_CUSTOMER"
-                    ? "text-white"
-                    : "text-neutral-400"
-                }`}
-              >
-                + Pelanggan Baru
+              <Text className="text-xs font-bold text-black uppercase tracking-wider">
+                Pelanggan Baru
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`flex-1 py-2 rounded-lg items-center ${
+              className={`pb-2.5 ${
                 registrationMode === "EXISTING_CUSTOMER"
-                  ? "bg-neonPurple"
-                  : "bg-transparent"
+                  ? "border-b-2 border-black"
+                  : "opacity-40"
               }`}
               onPress={() => setRegistrationMode("EXISTING_CUSTOMER")}
               activeOpacity={0.8}
             >
-              <Text
-                className={`text-xs font-bold ${
-                  registrationMode === "EXISTING_CUSTOMER"
-                    ? "text-white"
-                    : "text-neutral-400"
-                }`}
-              >
-                Relasi Vehicle
+              <Text className="text-xs font-bold text-black uppercase tracking-wider">
+                Pilih Pelanggan
               </Text>
             </TouchableOpacity>
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false} className="mb-4">
             {registrationMode === "NEW_CUSTOMER" ? (
-              <View>
-                <Text className="text-xs font-bold text-neonPurple uppercase tracking-wider mb-2">
-                  1. Data Pemilik (Customer Baru)
-                </Text>
+              <View className="space-y-4 mb-4">
                 <View className="mb-3">
-                  <Text className="text-xs font-semibold text-neutral-300 mb-1">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
                     Nama Lengkap *
                   </Text>
                   <TextInput
-                    className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                    placeholder="Contoh: Wisnu TriAndika"
-                    placeholderTextColor="#737373"
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="Nama Lengkap"
+                    placeholderTextColor="#a3a3a3"
                     value={name}
                     onChangeText={setName}
                   />
                 </View>
                 <View className="mb-3">
-                  <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                    No. WhatsApp / HP *
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                    Nomor Telepon *
                   </Text>
                   <TextInput
-                    className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                    placeholder="Contoh: 08123456789"
-                    placeholderTextColor="#737373"
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="08123456789"
+                    placeholderTextColor="#a3a3a3"
                     keyboardType="phone-pad"
                     value={phone}
                     onChangeText={setPhone}
                   />
                 </View>
-                <View className="mb-4">
-                  <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                    Alamat (Opsional)
+                <View className="mb-3">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                    Alamat
                   </Text>
                   <TextInput
-                    className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                    placeholder="Contoh: Jl. Sawangan, Depok"
-                    placeholderTextColor="#737373"
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="Alamat Pelanggan"
+                    placeholderTextColor="#a3a3a3"
                     value={address}
                     onChangeText={setAddress}
                   />
                 </View>
               </View>
             ) : (
-              <View>
-                <Text className="text-xs font-bold text-neonPurple uppercase tracking-wider mb-2">
-                  1. Pilih Pemilik (Customer Terdaftar)
-                </Text>
-
+              <View className="mb-4">
                 <TextInput
-                  className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm mb-3"
-                  placeholder="Cari nama atau no. telepon..."
-                  placeholderTextColor="#737373"
+                  className="h-10 border-b border-neutral-200 text-black text-sm px-0 mb-3"
+                  placeholder="Cari nama atau telepon..."
+                  placeholderTextColor="#a3a3a3"
                   value={customerSearch}
                   onChangeText={setCustomerSearch}
                 />
 
-                <View className="max-h-48 border border-darkBorder rounded-xl bg-darkBg p-2 mb-3">
-                  <ScrollView
-                    nestedScrollEnabled
-                    showsVerticalScrollIndicator={true}
-                  >
+                <View className="max-h-40 border border-neutral-100 rounded-xl p-2 mb-3">
+                  <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={true}>
                     {filteredCustomers.length === 0 ? (
-                      <Text className="text-xs text-neutral-500 text-center py-4">
-                        Data customer tidak ditemukan.
+                      <Text className="text-xs text-neutral-400 font-mono text-center py-4">
+                        Tidak ditemukan.
                       </Text>
                     ) : (
                       filteredCustomers.map((cust) => {
@@ -287,28 +265,24 @@ export const CreateCustomerVehicle = ({
                         return (
                           <TouchableOpacity
                             key={cust.id}
-                            className={`p-3 rounded-xl border mb-2 flex-row justify-between items-center ${
-                              isSelected
-                                ? "bg-neonPurple/20 border-neonPurple"
-                                : "bg-darkSurface border-darkBorder"
+                            className={`p-2.5 border-b border-neutral-100 flex-row justify-between items-center ${
+                              isSelected ? "bg-neutral-100" : ""
                             }`}
                             onPress={() => setSelectedCustomer(cust)}
                             activeOpacity={0.7}
                           >
                             <View>
-                              <Text className="text-sm font-bold text-white">
+                              <Text className="text-xs font-bold text-black">
                                 {cust.name}
                               </Text>
-                              <Text className="text-xs text-neutral-400 mt-0.5">
+                              <Text className="text-[11px] text-neutral-400 font-mono">
                                 {cust.phone}
                               </Text>
                             </View>
                             {isSelected && (
-                              <View className="bg-neonPurple px-2.5 py-1 rounded-lg">
-                                <Text className="text-[10px] font-bold text-white">
-                                  ✓ Terpilih
-                                </Text>
-                              </View>
+                              <Text className="text-xs font-mono font-bold text-black">
+                                ✓
+                              </Text>
                             )}
                           </TouchableOpacity>
                         );
@@ -319,84 +293,87 @@ export const CreateCustomerVehicle = ({
               </View>
             )}
 
-            <View className="h-[1px] bg-darkBorder my-2" />
+            <View className="pt-2 mb-4">
+              <Text className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-3">
+                Data Unit Kendaraan
+              </Text>
+              
+              <View className="mb-3">
+                <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                  Plat Nomor *
+                </Text>
+                <TextInput
+                  className="h-10 border-b border-neutral-200 text-black text-sm font-mono uppercase px-0"
+                  placeholder="B 1234 ABC"
+                  placeholderTextColor="#a3a3a3"
+                  autoCapitalize="characters"
+                  value={plateNumber}
+                  onChangeText={setPlateNumber}
+                />
+              </View>
 
-            <Text className="text-xs font-bold text-neonPurple uppercase tracking-wider my-2">
-              2. Data Kendaraan (Vehicle)
-            </Text>
-            <View className="mb-3">
-              <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                Plat Nomor *
-              </Text>
-              <TextInput
-                className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm font-mono uppercase"
-                placeholder="Contoh: B 1234 ABC"
-                placeholderTextColor="#737373"
-                autoCapitalize="characters"
-                value={plateNumber}
-                onChangeText={setPlateNumber}
-              />
-            </View>
-            <View className="flex-row space-x-3 mb-3">
-              <View className="flex-1 mr-2">
-                <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                  Merk / Brand *
+              <View className="flex-row gap-4 mb-3">
+                <View className="flex-1">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                    Merk *
+                  </Text>
+                  <TextInput
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="Toyota"
+                    placeholderTextColor="#a3a3a3"
+                    value={brand}
+                    onChangeText={setBrand}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                    Model *
+                  </Text>
+                  <TextInput
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="Avanza"
+                    placeholderTextColor="#a3a3a3"
+                    value={model}
+                    onChangeText={setModel}
+                  />
+                </View>
+              </View>
+
+              <View className="mb-3">
+                <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                  Warna
                 </Text>
                 <TextInput
-                  className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                  placeholder="Contoh: Toyota"
-                  placeholderTextColor="#737373"
-                  value={brand}
-                  onChangeText={setBrand}
+                  className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                  placeholder="Hitam"
+                  placeholderTextColor="#a3a3a3"
+                  value={color}
+                  onChangeText={setColor}
                 />
               </View>
-              <View className="flex-1">
-                <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                  Tipe / Model *
-                </Text>
-                <TextInput
-                  className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                  placeholder="Contoh: Avanza"
-                  placeholderTextColor="#737373"
-                  value={model}
-                  onChangeText={setModel}
-                />
-              </View>
-            </View>
-            <View className="mb-4">
-              <Text className="text-xs font-semibold text-neutral-300 mb-1">
-                Warna Kendaraan (Opsional)
-              </Text>
-              <TextInput
-                className="h-11 bg-darkInput border border-darkBorder rounded-xl px-4 text-white text-sm"
-                placeholder="Contoh: Hitam Metalik"
-                placeholderTextColor="#737373"
-                value={color}
-                onChangeText={setColor}
-              />
             </View>
           </ScrollView>
-          <View className="flex-row justify-end space-x-3 pt-2 border-t border-darkBorder">
+
+          <View className="pt-3 border-t border-neutral-100 flex-row justify-end items-center gap-3">
             <TouchableOpacity
-              className="px-5 py-3 rounded-xl bg-darkBg border border-darkBorder mr-2"
               onPress={handleClose}
               disabled={isSubmitting}
+              className="py-2.5 px-4"
               activeOpacity={0.7}
             >
-              <Text className="text-neutral-400 font-bold text-xs px-2 text-center">
-                Batal
-              </Text>
+              <Text className="text-neutral-400 font-mono text-xs uppercase">Batal</Text>
             </TouchableOpacity>
+
             <TouchableOpacity
-              className={`px-6 py-3 rounded-xl ${isSubmitting ? "bg-neonPurple/50" : "bg-neonPurple"}`}
+              className="bg-black py-2.5 px-6 rounded-full"
               onPress={handleSubmit}
               disabled={isSubmitting}
-              activeOpacity={0.8}
+              activeOpacity={0.85}
             >
               {isSubmitting ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-xs px-2 text-center">
+                <Text className="text-white font-bold text-xs">
                   Simpan Data
                 </Text>
               )}
@@ -407,3 +384,5 @@ export const CreateCustomerVehicle = ({
     </Modal>
   );
 };
+
+export default CreateCustomerVehicle;

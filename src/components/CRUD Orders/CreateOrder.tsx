@@ -137,18 +137,18 @@ export const CreateOrder = ({
 
   const handleSubmit = async () => {
     if (!selectedCustomerId) {
-      Alert.alert("Peringatan", "Silakan pilih pelanggan terlebih dahulu!");
+      Alert.alert("Peringatan", "Silakan pilih pelanggan terlebih dahulu.");
       return;
     }
     if (!selectedVehicleId) {
       Alert.alert(
         "Peringatan",
-        "Pelanggan ini belum memiliki kendaraan terdaftar! Daftarkan kendaraan terlebih dahulu di menu Pelanggan & Unit.",
+        "Pelanggan ini belum memiliki kendaraan terdaftar. Daftarkan kendaraan terlebih dahulu.",
       );
       return;
     }
     if (selectedItems.length === 0) {
-      Alert.alert("Peringatan", "Silakan pilih minimal 1 paket layanan cuci!");
+      Alert.alert("Peringatan", "Pilih minimal 1 paket layanan cuci.");
       return;
     }
 
@@ -167,23 +167,16 @@ export const CreateOrder = ({
           quantity: item.quantity || 1,
         })),
       } as any);
-      Alert.alert("Berhasil", "Transaksi order pencucian berhasil dibuat!");
+      Alert.alert("Berhasil", "Transaksi order baru berhasil disimpan.");
       onSuccess();
       handleClose();
     } catch (error: any) {
       console.log("Create Order Error:", error?.response?.data || error);
-
-      const serverErrors = error?.response?.data?.errors;
-      const errorDetail = Array.isArray(serverErrors)
-        ? serverErrors.map((e: any) => `${e.path?.join(".")}: ${e.message}`).join("\n")
-        : "";
-
       const errorMsg =
         error?.response?.data?.message ||
         error.message ||
         "Gagal membuat transaksi order baru.";
-
-      Alert.alert("Gagal", errorDetail ? `${errorMsg}\n\n${errorDetail}` : errorMsg);
+      Alert.alert("Gagal", errorMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -197,40 +190,41 @@ export const CreateOrder = ({
       onRequestClose={handleClose}
     >
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1 justify-end bg-black/60"
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        className="flex-1 justify-end bg-black/40"
       >
-        <View className="bg-darkSurface border-t border-darkBorder rounded-t-3xl p-5 max-h-[90%]">
-          <View className="items-center mb-4">
-            <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-            <Text className="w-full text-center text-base font-bold text-white">
-              Tambah Order Pencucian
-            </Text>
-            <Text className="w-full text-center text-xs text-neutral-400 mt-0.5">
-              Pilih pelanggan, unit kendaraan, dan paket cuci
-            </Text>
+        <View className="bg-white border-t border-neutral-200 rounded-t-3xl p-6 max-h-[88%]">
+          <View className="flex-row justify-between items-center pb-4 border-b border-neutral-100 mb-4">
+            <View>
+              <Text className="text-lg font-black text-black">
+                Tambah Order
+              </Text>
+              <Text className="text-xs text-neutral-400 font-mono mt-0.5 uppercase">
+                Transaksi Baru
+              </Text>
+            </View>
+            <TouchableOpacity onPress={handleClose} activeOpacity={0.7}>
+              <Text className="text-neutral-400 text-sm font-mono uppercase">Tutup</Text>
+            </TouchableOpacity>
           </View>
 
           {isLoadingData ? (
-            <View className="py-10 items-center justify-center">
-              <ActivityIndicator size="large" color="#a855f7" />
-              <Text className="mt-3 text-xs text-neutral-400">
-                Memuat data pelanggan & kendaraan...
+            <View className="py-12 items-center justify-center">
+              <ActivityIndicator size="small" color="#000000" />
+              <Text className="mt-3 text-xs text-neutral-400 font-mono">
+                MEMUAT DATA...
               </Text>
             </View>
           ) : (
             <ScrollView showsVerticalScrollIndicator={false}>
               <View className="mb-4">
-                <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
+                <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
                   1. Pilih Pelanggan *
                 </Text>
                 {customer.length === 0 ? (
-                  <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
-                    <Text className="text-xs text-neutral-500">
-                      Belum ada data pelanggan. Tambahkan pelanggan terlebih
-                      dahulu.
-                    </Text>
-                  </View>
+                  <Text className="text-xs text-neutral-400 font-mono py-2">
+                    Belum ada data pelanggan.
+                  </Text>
                 ) : (
                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     <View className="flex-row gap-2">
@@ -241,19 +235,23 @@ export const CreateOrder = ({
                             key={cust.id}
                             className={`px-3.5 py-2.5 rounded-xl border ${
                               isSelected
-                                ? "bg-neonPurple/20 border-neonPurple"
-                                : "bg-darkBg border-darkBorder"
+                                ? "bg-black border-black"
+                                : "border-neutral-200"
                             }`}
                             onPress={() => setSelectedCustomerId(cust.id)}
                           >
                             <Text
                               className={`text-xs font-bold ${
-                                isSelected ? "text-neonPurple" : "text-white"
+                                isSelected ? "text-white" : "text-black"
                               }`}
                             >
                               {cust.name}
                             </Text>
-                            <Text className="text-[10px] text-neutral-400 mt-0.5">
+                            <Text
+                              className={`text-[10px] font-mono mt-0.5 ${
+                                isSelected ? "text-neutral-300" : "text-neutral-400"
+                              }`}
+                            >
                               {cust.phone}
                             </Text>
                           </TouchableOpacity>
@@ -265,13 +263,13 @@ export const CreateOrder = ({
               </View>
 
               <View className="mb-4">
-                <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
+                <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
                   2. Pilih Unit Kendaraan *
                 </Text>
                 {availableVehicles.length === 0 ? (
-                  <View className="bg-darkBg p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10">
-                    <Text className="text-xs text-amber-400">
-                      Pelanggan ini belum memiliki unit kendaraan terdaftar.
+                  <View className="py-3 px-4 border border-dashed border-neutral-200 rounded-xl">
+                    <Text className="text-xs text-neutral-400 font-mono text-center">
+                      Pelanggan ini belum memiliki kendaraan terdaftar.
                     </Text>
                   </View>
                 ) : (
@@ -284,19 +282,23 @@ export const CreateOrder = ({
                             key={veh.id}
                             className={`px-3.5 py-2.5 rounded-xl border ${
                               isSelected
-                                ? "bg-neonPurple/20 border-neonPurple"
-                                : "bg-darkBg border-darkBorder"
+                                ? "bg-black border-black"
+                                : "border-neutral-200"
                             }`}
                             onPress={() => setSelectedVehicleId(veh.id)}
                           >
                             <Text
                               className={`text-xs font-bold font-mono ${
-                                isSelected ? "text-neonPurple" : "text-white"
+                                isSelected ? "text-white" : "text-black"
                               }`}
                             >
                               {veh.plateNumber}
                             </Text>
-                            <Text className="text-[10px] text-neutral-400 mt-0.5">
+                            <Text
+                              className={`text-[10px] mt-0.5 ${
+                                isSelected ? "text-neutral-300" : "text-neutral-400"
+                              }`}
+                            >
                               {veh.brand} {veh.model}
                             </Text>
                           </TouchableOpacity>
@@ -308,61 +310,15 @@ export const CreateOrder = ({
               </View>
 
               <View className="mb-4">
-                <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
-                  3. Staff yang Bertugas *
-                </Text>
-                {staffs.length === 0 ? (
-                  <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
-                    <Text className="text-xs text-neutral-500">
-                      Belum ada data staff di database.
-                    </Text>
-                  </View>
-                ) : (
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View className="flex-row gap-2">
-                      {staffs.map((staff) => {
-                        const isSelected =
-                          String(selectedStaffId) === String(staff.id);
-                        return (
-                          <TouchableOpacity
-                            key={staff.id}
-                            className={`px-3.5 py-2.5 rounded-xl border ${
-                              isSelected
-                                ? "bg-neonPurple/20 border-neonPurple"
-                                : "bg-darkBg border-darkBorder"
-                            }`}
-                            onPress={() => setSelectedStaffId(staff.id)}
-                          >
-                            <Text
-                              className={`text-xs font-bold ${
-                                isSelected ? "text-neonPurple" : "text-white"
-                              }`}
-                            >
-                              {staff.name}
-                            </Text>
-                            <Text className="text-[10px] text-neutral-400 mt-0.5">
-                              {staff.phone || "Staff"}
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </View>
-                  </ScrollView>
-                )}
-              </View>
-
-              <View className="mb-4">
-                <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
-                  4. Layanan Cuci (Bisa Pilih Lebih Dari 1) *
+                <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+                  3. Paket Layanan Cuci *
                 </Text>
                 {services.length === 0 ? (
-                  <View className="bg-darkBg p-3 rounded-xl border border-darkBorder">
-                    <Text className="text-xs text-neutral-500">
-                      Belum ada paket layanan cuci di database.
-                    </Text>
-                  </View>
+                  <Text className="text-xs text-neutral-400 font-mono py-2">
+                    Belum ada layanan tersedia.
+                  </Text>
                 ) : (
-                  <View className="gap-2">
+                  <View className="border-t border-neutral-100">
                     {services.map((service) => {
                       const selectedItem = selectedItems.find(
                         (i) => String(i.serviceId) === String(service.id),
@@ -372,51 +328,31 @@ export const CreateOrder = ({
                       return (
                         <TouchableOpacity
                           key={service.id}
-                          className={`p-3 rounded-2xl border flex-row justify-between items-center ${
-                            isSelected
-                              ? "bg-neonPurple/15 border-neonPurple"
-                              : "bg-darkBg border-darkBorder"
-                          }`}
+                          className="py-3 border-b border-neutral-100 flex-row justify-between items-center"
                           onPress={() => handleToggleService(service.id)}
                           activeOpacity={0.7}
                         >
                           <View className="flex-row items-center flex-1">
-                            <View
-                              className={`w-4 h-4 rounded-md mr-2.5 border items-center justify-center ${
-                                isSelected
-                                  ? "bg-neonPurple border-neonPurple"
-                                  : "border-neutral-600"
+                            <Text
+                              className={`font-mono text-sm mr-3 ${
+                                isSelected ? "text-black font-bold" : "text-neutral-300"
                               }`}
                             >
-                              {isSelected && (
-                                <Text className="text-[10px] font-bold text-white">
-                                  ✓
-                                </Text>
-                              )}
-                            </View>
+                              {isSelected ? "✓" : "○"}
+                            </Text>
                             <View className="flex-1">
                               <Text
-                                className={`text-xs font-bold ${
-                                  isSelected
-                                    ? "text-white"
-                                    : "text-neutral-300"
+                                className={`text-xs ${
+                                  isSelected ? "font-black text-black" : "font-medium text-neutral-700"
                                 }`}
                               >
                                 {service.name}
                               </Text>
-                              <Text className="text-[10px] text-neonPurple font-semibold mt-0.5">
+                              <Text className="text-[11px] text-neutral-400 font-mono mt-0.5">
                                 {formatCurrency(Number(service.price))}
                               </Text>
                             </View>
                           </View>
-
-                          {isSelected && (
-                            <View className="bg-neonPurple/20 border border-neonPurple/40 px-2.5 py-1 rounded-lg">
-                              <Text className="text-[10px] font-bold text-neonPurple">
-                                Terpilih
-                              </Text>
-                            </View>
-                          )}
                         </TouchableOpacity>
                       );
                     })}
@@ -424,43 +360,72 @@ export const CreateOrder = ({
                 )}
               </View>
 
-              <View className="bg-darkBg rounded-2xl p-4 border border-darkBorder mb-5 flex-row justify-between items-center">
-                <View>
-                  <Text className="text-xs text-neutral-400 font-medium">
-                    Total Biaya Transaksi:
+              <View className="mb-4">
+                <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+                  4. Petugas Cuci (Opsional)
+                </Text>
+                {staffs.length === 0 ? (
+                  <Text className="text-xs text-neutral-400 font-mono py-2">
+                    Belum ada data staff.
                   </Text>
-                  <Text className="text-[10px] text-neutral-500 mt-0.5">
-                    {selectedItems.length} layanan dipilih
-                  </Text>
-                </View>
-                <Text className="text-base font-bold text-neonPurple font-mono">
+                ) : (
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View className="flex-row gap-2">
+                      {staffs.map((staff) => {
+                        const isSelected = String(selectedStaffId) === String(staff.id);
+                        return (
+                          <TouchableOpacity
+                            key={staff.id}
+                            className={`px-3 py-1.5 rounded-xl border ${
+                              isSelected
+                                ? "bg-black border-black"
+                                : "border-neutral-200"
+                            }`}
+                            onPress={() => setSelectedStaffId(staff.id)}
+                          >
+                            <Text
+                              className={`text-xs font-bold ${
+                                isSelected ? "text-white" : "text-black"
+                              }`}
+                            >
+                              {staff.name}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
+                  </ScrollView>
+                )}
+              </View>
+
+              <View className="py-3 border-t border-neutral-200 flex-row justify-between items-center mb-6">
+                <Text className="text-xs font-mono uppercase text-neutral-400">
+                  Total Biaya
+                </Text>
+                <Text className="text-lg font-black text-black font-mono">
                   {formatCurrency(calculatedTotalPrice)}
                 </Text>
               </View>
 
-              <View className="flex-row justify-end space-x-3 pt-2 border-t border-darkBorder mb-3">
+              <View className="pt-2 border-t border-neutral-100 flex-row justify-end items-center gap-3 mb-4">
                 <TouchableOpacity
-                  className="px-5 py-3 rounded-xl bg-darkBg border border-darkBorder mr-2"
                   onPress={handleClose}
-                  disabled={isSubmitting}
+                  className="py-2.5 px-4"
                   activeOpacity={0.7}
                 >
-                  <Text className="text-neutral-400 font-bold text-xs px-2 text-center">
-                    Batal
-                  </Text>
+                  <Text className="text-neutral-400 font-mono text-xs uppercase">Batal</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                  className={`px-6 py-3 rounded-xl ${
-                    isSubmitting ? "bg-neonPurple/50" : "bg-neonPurple"
-                  }`}
+                  className="bg-black py-2.5 px-6 rounded-full"
                   onPress={handleSubmit}
-                  disabled={isSubmitting}
-                  activeOpacity={0.8}
+                  disabled={isSubmitting || !selectedCustomerId || !selectedVehicleId || selectedItems.length === 0}
+                  activeOpacity={0.85}
                 >
                   {isSubmitting ? (
                     <ActivityIndicator size="small" color="#ffffff" />
                   ) : (
-                    <Text className="text-white font-bold text-xs px-2 text-center">
+                    <Text className="text-white font-bold text-xs">
                       Simpan Order
                     </Text>
                   )}

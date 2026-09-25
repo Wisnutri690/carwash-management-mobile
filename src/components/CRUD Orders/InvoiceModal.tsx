@@ -81,96 +81,78 @@ export const InvoiceModal = ({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <View className="flex-1 bg-black/75 justify-center items-center p-4">
-        <View className="w-full max-w-md bg-darkSurface border border-darkBorder rounded-3xl p-5 max-h-[90%]">
+      <View className="flex-1 bg-black/40 justify-center items-center p-6">
+        <View className="w-full max-w-md bg-white border border-neutral-200 rounded-3xl p-6 max-h-[90%]">
           {isLoading ? (
             <View className="py-16 items-center justify-center">
-              <ActivityIndicator size="large" color="#a855f7" />
-              <Text className="mt-3 text-xs text-neutral-400">
-                Memuat nota invoice...
+              <ActivityIndicator size="small" color="#000000" />
+              <Text className="mt-3 text-xs text-neutral-400 font-mono tracking-wider">
+                MEMUAT INVOICE...
               </Text>
             </View>
           ) : invoice ? (
             <ScrollView showsVerticalScrollIndicator={false}>
-              <View className="items-center border-b border-dashed border-neutral-700 pb-4 mb-4">
-                <Text className="text-base font-bold text-neonPurple tracking-wide">
-                  CARWASH MANAGEMENT
+              <View className="pb-4 mb-4 border-b border-neutral-200">
+                <Text className="text-xl font-black text-black tracking-tight">
+                  APEX CARWASH
                 </Text>
-                <Text className="text-xs text-neutral-400 mt-0.5">
-                  Bukti Pembayaran & Layanan
+                <Text className="text-xs text-neutral-400 font-mono mt-0.5 uppercase tracking-widest">
+                  Bukti Pembayaran
                 </Text>
-                <View className="bg-darkBg px-3 py-1 rounded-full border border-darkBorder mt-2">
-                  <Text className="text-xs font-mono font-bold text-white">
-                    {invoice.invoiceNumber}
-                  </Text>
-                </View>
-                <Text className="text-[10px] text-neutral-500 mt-1.5">
-                  Diterbitkan:{" "}
+                <Text className="text-xs font-mono font-bold text-black mt-2">
+                  #{invoice.invoiceNumber}
+                </Text>
+                <Text className="text-[10px] text-neutral-400 font-mono mt-0.5">
                   {formatDate(invoice.issuedAt || invoice.createdAt)}
                 </Text>
               </View>
 
-              <View className="bg-darkBg rounded-2xl p-3.5 border border-darkBorder mb-4 gap-1.5">
+              <View className="py-2 border-b border-neutral-100 mb-4 gap-1.5">
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-neutral-400">Pelanggan:</Text>
-                  <Text className="text-xs font-bold text-white">
+                  <Text className="text-xs text-neutral-400">Pelanggan</Text>
+                  <Text className="text-xs font-bold text-black">
                     {invoice.order.customer?.name || "-"}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-neutral-400">No. HP:</Text>
-                  <Text className="text-xs text-neutral-300">
-                    {invoice.order.customer?.phone || "-"}
-                  </Text>
-                </View>
-                <View className="flex-row justify-between">
-                  <Text className="text-xs text-neutral-400">No. Plat:</Text>
-                  <Text className="text-xs font-bold text-neonPurple font-mono">
+                  <Text className="text-xs text-neutral-400">Plat Nomor</Text>
+                  <Text className="text-xs font-bold text-black font-mono">
                     {invoice.order.vehicle?.plateNumber || "-"}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-neutral-400">Kendaraan:</Text>
-                  <Text className="text-xs text-neutral-300">
-                    {invoice.order.vehicle?.brand}{" "}
-                    {invoice.order.vehicle?.model} (
-                    {invoice.order.vehicle?.color || "-"})
+                  <Text className="text-xs text-neutral-400">Kendaraan</Text>
+                  <Text className="text-xs text-neutral-600">
+                    {invoice.order.vehicle?.brand} {invoice.order.vehicle?.model}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-xs text-neutral-400">
-                    Petugas Cuci:
-                  </Text>
-                  <Text className="text-xs font-semibold text-white">
+                  <Text className="text-xs text-neutral-400">Petugas</Text>
+                  <Text className="text-xs text-black">
                     {invoice.order.staff?.name || "Staff Umum"}
                   </Text>
                 </View>
               </View>
 
-              <Text className="text-xs font-bold text-neutral-300 uppercase mb-2">
-                Rincian Layanan:
+              <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mb-2">
+                Rincian Layanan
               </Text>
-              <View className="bg-darkBg rounded-2xl p-3.5 border border-darkBorder mb-4">
-                {invoice.order.orderItems &&
-                invoice.order.orderItems.length > 0 ? (
+              <View className="border-t border-neutral-100 mb-4">
+                {invoice.order.orderItems && invoice.order.orderItems.length > 0 ? (
                   invoice.order.orderItems.map((item, idx) => (
                     <View
                       key={item.id || idx}
-                      className={`flex-row justify-between items-center py-2 ${
-                        idx !== (invoice.order.orderItems?.length || 0) - 1
-                          ? "border-b border-neutral-800"
-                          : ""
-                      }`}
+                      className="flex-row justify-between items-center py-2.5 border-b border-neutral-100"
                     >
                       <View className="flex-1 mr-2">
-                        <Text className="text-xs font-semibold text-white">
+                        <Text className="text-xs font-bold text-black">
                           {item.service?.name || `Layanan #${item.serviceId}`}
                         </Text>
-                        <Text className="text-[10px] text-neutral-400">
-                          {item.quantity} x {formatCurrency(item.price)}
+                        <Text className="text-[10px] text-neutral-400 font-mono">
+                          {item.quantity} × {formatCurrency(item.price)}
                         </Text>
                       </View>
-                      <Text className="text-xs font-bold text-neutral-200 font-mono">
+                      <Text className="text-xs font-mono font-bold text-black">
                         {formatCurrency(
                           item.subtotal || Number(item.price) * item.quantity,
                         )}
@@ -178,61 +160,39 @@ export const InvoiceModal = ({
                     </View>
                   ))
                 ) : (
-                  <Text className="text-xs text-neutral-500 text-center py-2">
-                    Tidak ada rincian layanan
+                  <Text className="text-xs text-neutral-400 font-mono py-2">
+                    Tidak ada rincian.
                   </Text>
                 )}
               </View>
 
-              <View className="bg-darkBg rounded-2xl p-4 border border-darkBorder mb-5">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-xs text-neutral-400">
-                    Metode Bayar:
-                  </Text>
-                  <Text className="text-xs font-bold text-white">
+              <View className="py-3 border-t border-neutral-200 mb-6 gap-2">
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-xs text-neutral-400">Metode</Text>
+                  <Text className="text-xs font-mono text-black">
                     {invoice.order.paymentMethod || "CASH"}
                   </Text>
                 </View>
-                <View className="flex-row justify-between items-center mb-3">
-                  <Text className="text-xs text-neutral-400">
-                    Status Bayar:
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-xs text-neutral-400">Status</Text>
+                  <Text className="text-xs font-mono font-bold text-black uppercase">
+                    {invoice.order.paymentStatus === "PAID" ? "Lunas" : "Belum Lunas"}
                   </Text>
-                  <View
-                    className={`px-2.5 py-0.5 rounded-md ${
-                      invoice.order.paymentStatus === "PAID"
-                        ? "bg-emerald-500/20 border border-emerald-500/40"
-                        : "bg-red-500/20 border border-red-500/40"
-                    }`}
-                  >
-                    <Text
-                      className={`text-[10px] font-bold ${
-                        invoice.order.paymentStatus === "PAID"
-                          ? "text-emerald-400"
-                          : "text-red-400"
-                      }`}
-                    >
-                      {invoice.order.paymentStatus === "PAID"
-                        ? "LUNAS"
-                        : "BELUM LUNAS"}
-                    </Text>
-                  </View>
                 </View>
-                <View className="pt-2.5 border-t border-neutral-800 flex-row justify-between items-center">
-                  <Text className="text-sm font-bold text-white">
-                    Total Pembayaran:
-                  </Text>
-                  <Text className="text-base font-bold text-neonPurple font-mono">
+                <View className="flex-row justify-between items-center pt-2 border-t border-neutral-100">
+                  <Text className="text-sm font-black text-black">Total</Text>
+                  <Text className="text-base font-black text-black font-mono">
                     {formatCurrency(invoice.order.totalPrice)}
                   </Text>
                 </View>
               </View>
 
               <TouchableOpacity
-                className="w-full py-3.5 bg-neonPurple rounded-2xl items-center justify-center"
+                className="w-full py-3 bg-black rounded-full items-center justify-center"
                 onPress={onClose}
-                activeOpacity={0.8}
+                activeOpacity={0.85}
               >
-                <Text className="text-white font-bold text-xs">Tutup Nota</Text>
+                <Text className="text-white font-bold text-xs">Tutup</Text>
               </TouchableOpacity>
             </ScrollView>
           ) : null}

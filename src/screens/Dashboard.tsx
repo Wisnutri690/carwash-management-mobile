@@ -67,9 +67,9 @@ export const DashboardScreen = () => {
   }, []);
 
   const handleLogout = () => {
-    Alert.alert("Konfirmasi LogOut", "Yakin mau LogOut dari akun Admin?", [
-      { text: "Ga Jadi", style: "cancel" },
-      { text: "Yakin", style: "destructive", onPress: logOut },
+    Alert.alert("Konfirmasi Keluar", "Yakin mau keluar dari akun Admin?", [
+      { text: "Batal", style: "cancel" },
+      { text: "Keluar", style: "destructive", onPress: logOut },
     ]);
   };
 
@@ -77,8 +77,19 @@ export const DashboardScreen = () => {
     (item) => item.status === "WAITING" || item.status === "IN_PROGRESS",
   ).length;
 
-  const totalIncome = orders
-    .filter((item) => item.paymentStatus === "PAID")
+  const now = new Date();
+  const isToday = (dateString?: string) => {
+    if (!dateString) return false;
+    const d = new Date(dateString);
+    return (
+      d.getDate() === now.getDate() &&
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    );
+  };
+
+  const todayRevenue = orders
+    .filter((item) => item.paymentStatus === "PAID" && isToday(item.createdAt))
     .reduce((sum, item) => sum + (Number(item.totalPrice) || 0), 0);
 
   const formatCurrency = (amount: number) => {
@@ -90,258 +101,232 @@ export const DashboardScreen = () => {
     }).format(validAmount);
   };
 
-  const getStatusInfo = (status: OrderStatus) => {
+  const getStatusLabel = (status: OrderStatus) => {
     switch (status) {
       case "WAITING":
-        return { label: "Antrean", colorClass: "text-amber-400" };
+        return "• Menunggu";
       case "IN_PROGRESS":
-        return { label: "Sedang Dicuci", colorClass: "text-blue-400" };
+        return "• Sedang Dicuci";
       case "COMPLETED":
-        return { label: "Selesai", colorClass: "text-emerald-400" };
+        return "• Selesai";
       case "CANCELLED":
-        return { label: "Dibatalkan", colorClass: "text-red-400" };
+        return "• Dibatalkan";
       default:
-        return { label: status, colorClass: "text-neutral-400" };
+        return `• ${status}`;
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-darkBg" edges={["top", "left", "right"]}>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+    <SafeAreaView className="flex-1 bg-white" edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
 
-      <View className="flex-row justify-between items-center px-5 py-4 bg-darkSurface border-b border-darkBorder">
+      <View className="flex-row justify-between items-center px-6 py-4 border-b border-neutral-100">
         <View>
-          <Text className="text-xs text-neutral-400">Selamat Datang,</Text>
-          <Text className="text-lg font-bold text-white mt-0.5">
-            {admin?.name || admin?.email || "Admin APEX"}
+          <Text className="text-xl font-black text-black tracking-tight">
+            APEX
           </Text>
-          <Text className="text-xs text-neonPurple font-medium mt-0.5">
-            Hai, Admin
+          <Text className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mt-0.5">
+            {admin?.name || "Admin"}
           </Text>
         </View>
 
-        <TouchableOpacity
-          className="px-3.5 py-2 bg-red-500/15 rounded-xl border border-red-500/30"
-          onPress={handleLogout}
-          activeOpacity={0.7}
-        >
-          <Text className="text-red-400 text-xs font-bold">Keluar</Text>
-        </TouchableOpacity>
+        <View className="flex-row items-center gap-3">
+          <TouchableOpacity
+            className="w-8 h-8 rounded-full border border-neutral-200 items-center justify-center"
+            onPress={fetchData}
+            activeOpacity={0.7}
+          >
+            <Text className="text-black text-sm">↻</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handleLogout}
+            activeOpacity={0.7}
+          >
+            <Text className="text-xs font-mono text-neutral-400 uppercase tracking-wider">
+              Keluar
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {isLoading ? (
-        <View className="flex-1 justify-center items-center p-5 bg-darkBg">
-          <ActivityIndicator size="large" color="#a855f7" />
-          <Text className="mt-3 text-xs text-neutral-400 font-medium">
-            Memuat data dashboard...
+        <View className="flex-1 justify-center items-center p-5 bg-white">
+          <ActivityIndicator size="small" color="#000000" />
+          <Text className="mt-3 text-xs text-neutral-400 font-mono tracking-wider">
+            MEMUAT DATA...
           </Text>
         </View>
       ) : (
         <ScrollView
-          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingVertical: 20 }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={onRefresh}
-              tintColor="#a855f7"
-              colors={["#a855f7"]}
+              tintColor="#000000"
+              colors={["#000000"]}
             />
           }
         >
-          <View className="mb-6 flex-row gap-3">
+          <View className="flex-row gap-3 mb-8">
             <TouchableOpacity
-              className="flex-1 bg-darkSurface border border-neonPurple/50 rounded-2xl p-4 justify-between"
+              className="flex-1 bg-black rounded-xl py-3 px-4 items-center justify-center"
               onPress={() => navigation.navigate("CustomerVehicle")}
-              activeOpacity={0.7}
+              activeOpacity={0.85}
             >
-              <Text className="text-white font-bold text-sm tracking-wide">
+              <Text className="text-white font-bold text-xs tracking-wide">
                 Pelanggan & Unit
               </Text>
-              <Text className="text-neonPurple font-semibold text-xs mt-0.5">
-                Kelola data customer
-              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="flex-1 bg-darkSurface border border-neonPurple/50 rounded-2xl p-4 justify-between"
+              className="flex-1 border border-black rounded-xl py-3 px-4 items-center justify-center"
               onPress={() => navigation.navigate("OrderScreen")}
-              activeOpacity={0.7}
+              activeOpacity={0.85}
             >
-              <Text className="text-white font-bold text-sm tracking-wide">
+              <Text className="text-black font-bold text-xs tracking-wide">
                 Transaksi Order
-              </Text>
-              <Text className="text-neonPurple font-semibold text-xs mt-0.5">
-                Kelola order cuci
               </Text>
             </TouchableOpacity>
           </View>
 
-          <Text className="text-base font-bold text-white mb-3 tracking-wide">
-            Ringkasan Operasional
-          </Text>
-
-          <View className="flex-row flex-wrap justify-between mb-6">
-            <View className="w-[48%] mb-3">
-              <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-amber-500">
-                <Text className="text-xs text-neutral-400 font-semibold">
-                  Antrean Aktif
-                </Text>
-                <Text className="text-xl font-bold text-amber-400 my-1">
-                  {activeQueueCount}
-                </Text>
-                <Text className="text-[10px] text-neutral-500">
-                  Sedang dikerjakan
-                </Text>
-              </View>
-            </View>
-            <View className="w-[48%] mb-3">
-              <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-emerald-500">
-                <Text className="text-xs text-neutral-400 font-semibold">
-                  Total Omset
-                </Text>
-                <Text
-                  className="text-base font-bold text-emerald-400 my-1"
-                  numberOfLines={1}
-                >
-                  {formatCurrency(totalIncome)}
-                </Text>
-                <Text className="text-[10px] text-neutral-500">
-                  Transaksi lunas
-                </Text>
-              </View>
-            </View>
-            <View className="w-[48%] mb-3">
-              <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-purple-500">
-                <Text className="text-xs text-neutral-400 font-semibold">
-                  Total Pelanggan
-                </Text>
-                <Text className="text-xl font-bold text-purple-400 my-1">
-                  {customerCount}
-                </Text>
-                <Text className="text-[10px] text-neutral-500">
-                  Customer terdaftar
-                </Text>
-              </View>
-            </View>
-            <View className="w-[48%] mb-3">
-              <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder border-l-4 border-l-blue-500">
-                <Text className="text-xs text-neutral-400 font-semibold">
-                  Kendaraan
-                </Text>
-                <Text className="text-xl font-bold text-blue-400 my-1">
-                  {vehicleCount}
-                </Text>
-                <Text className="text-[10px] text-neutral-500">
-                  {" "}
-                  Vehicle Terdaftar
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-base font-bold text-white tracking-wide">
-              Data Order Terkini
+          <View className="mb-8">
+            <Text className="text-[11px] font-mono uppercase tracking-widest text-neutral-400 mb-3">
+              Ringkasan Operasional
             </Text>
-            <Text className="text-xs text-neutral-400 font-semibold">
-              ({orders.length} Order)
-            </Text>
-          </View>
 
-          {orders.length === 0 ? (
-            <View className="bg-darkSurface rounded-2xl p-6 items-center border border-darkBorder">
-              <Text className="text-base font-bold text-white mb-1.5">
-                Belum Ada Order Terkini
-              </Text>
-              <Text className="text-xs text-neutral-500 text-center leading-5">
-                Belum ada order pencucian hari ini. Tarik layar ke bawah untuk
-                memperbarui.
-              </Text>
-            </View>
-          ) : (
-            orders.slice(0, 5).map((orderItem) => {
-              const statusInfo = getStatusInfo(orderItem.status);
-              const isPaid = orderItem.paymentStatus === "PAID";
-
-              return (
+            <View className="border border-neutral-200 rounded-2xl overflow-hidden bg-white">
+              <View className="flex-row border-b border-neutral-200">
                 <TouchableOpacity
-                  key={orderItem.id}
-                  className="w-full mb-3"
+                  className="flex-1 p-4 border-r border-neutral-200"
                   activeOpacity={0.7}
+                  onPress={() => navigation.navigate("OrderScreen")}
                 >
-                  <View className="bg-darkSurface rounded-2xl p-4 border border-darkBorder">
-                    <View className="flex-row justify-between items-start">
-                      <View>
-                        <Text className="text-base font-bold text-white font-mono tracking-wider">
-                          {orderItem.vehicle?.plateNumber || "NO PLAT"}
-                        </Text>
-                        <Text className="text-xs text-neutral-400 mt-0.5">
-                          {orderItem.vehicle?.brand} {orderItem.vehicle?.model}
-                        </Text>
-                      </View>
-
-                      <Text
-                        className={`text-xs font-bold ${statusInfo.colorClass}`}
-                      >
-                        {statusInfo.label}
-                      </Text>
-                    </View>
-
-                    <View className="h-[1px] bg-neutral-800 my-3" />
-
-                    <View className="flex-row justify-between">
-                      <View className="flex-1">
-                        <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
-                          Pelanggan
-                        </Text>
-                        <Text
-                          className="text-xs font-semibold text-neutral-200 mt-0.5"
-                          numberOfLines={1}
-                        >
-                          {orderItem.customer?.name || "Customer"}
-                        </Text>
-                      </View>
-
-                      <View className="flex-1">
-                        <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
-                          Staff
-                        </Text>
-                        <Text
-                          className="text-xs font-semibold text-neutral-200 mt-0.5"
-                          numberOfLines={1}
-                        >
-                          {orderItem.staff?.name || "Belum Ditugaskan"}
-                        </Text>
-                      </View>
-
-                      <View className="flex-[1.2] items-end">
-                        <Text className="text-[10px] text-neutral-500 uppercase font-semibold">
-                          Pembayaran
-                        </Text>
-                        <Text
-                          className={`text-[11px] font-bold mt-0.5 ${isPaid ? "text-emerald-400" : "text-red-400"}`}
-                        >
-                          {isPaid
-                            ? `LUNAS (${orderItem.paymentMethod || "QRIS"})`
-                            : "BELUM BAYAR"}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <View className="flex-row justify-between items-center mt-3 pt-2.5 border-t border-neutral-800">
-                      <Text className="text-xs text-neutral-400 font-medium">
-                        Total Tagihan:
-                      </Text>
-                      <Text className="text-sm font-bold text-neonPurple font-mono">
-                        {formatCurrency(orderItem.totalPrice)}
-                      </Text>
-                    </View>
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                      Antrean Aktif
+                    </Text>
+                    <Text className="text-xs text-neutral-400">›</Text>
                   </View>
+                  <Text className="text-3xl font-black text-black mt-1">
+                    {activeQueueCount}
+                  </Text>
                 </TouchableOpacity>
-              );
-            })
-          )}
+
+                <TouchableOpacity
+                  className="flex-1 p-4"
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate("Sales")}
+                >
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                      Penjualan Hari Ini
+                    </Text>
+                    <Text className="text-xs text-neutral-400">›</Text>
+                  </View>
+                  <Text className="text-xl font-black text-black mt-2 font-mono" numberOfLines={1}>
+                    {formatCurrency(todayRevenue)}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row">
+                <TouchableOpacity
+                  className="flex-1 p-4 border-r border-neutral-200"
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate("CustomerVehicle")}
+                >
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                      Pelanggan
+                    </Text>
+                    <Text className="text-xs text-neutral-400">›</Text>
+                  </View>
+                  <Text className="text-3xl font-black text-black mt-1">
+                    {customerCount}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-1 p-4"
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate("CustomerVehicle")}
+                >
+                  <View className="flex-row justify-between items-center">
+                    <Text className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
+                      Kendaraan
+                    </Text>
+                    <Text className="text-xs text-neutral-400">›</Text>
+                  </View>
+                  <Text className="text-3xl font-black text-black mt-1">
+                    {vehicleCount}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <View className="mb-8">
+            <View className="flex-row justify-between items-center mb-3">
+              <Text className="text-[11px] font-mono uppercase tracking-widest text-neutral-400">
+                Order Terkini
+              </Text>
+              <Text className="text-xs font-mono text-neutral-400">
+                {orders.length} TOTAL
+              </Text>
+            </View>
+
+            {orders.length === 0 ? (
+              <View className="py-10 items-center border border-dashed border-neutral-200 rounded-2xl">
+                <Text className="text-xs text-neutral-400 font-mono">
+                  Belum ada transaksi order hari ini.
+                </Text>
+              </View>
+            ) : (
+              <View className="border-t border-neutral-100">
+                {orders.slice(0, 5).map((orderItem) => {
+                  const isPaid = orderItem.paymentStatus === "PAID";
+
+                  return (
+                    <TouchableOpacity
+                      key={orderItem.id}
+                      className="py-4 border-b border-neutral-100 flex-row justify-between items-center"
+                      activeOpacity={0.7}
+                      onPress={() => navigation.navigate("OrderScreen")}
+                    >
+                      <View className="flex-1 mr-3">
+                        <View className="flex-row items-center gap-2">
+                          <Text className="text-base font-black text-black font-mono tracking-wider">
+                            {orderItem.vehicle?.plateNumber || "NO PLAT"}
+                          </Text>
+                          <Text className="text-xs text-neutral-500 font-medium">
+                            {orderItem.vehicle?.brand} {orderItem.vehicle?.model}
+                          </Text>
+                        </View>
+                        <Text className="text-xs text-neutral-400 mt-1">
+                          {orderItem.customer?.name || "-"}
+                        </Text>
+                      </View>
+
+                      <View className="items-end">
+                        <Text className="text-xs font-semibold text-neutral-900">
+                          {getStatusLabel(orderItem.status)}
+                        </Text>
+                        <Text className="text-xs font-bold text-black font-mono mt-1">
+                          {formatCurrency(Number(orderItem.totalPrice) || 0)}
+                        </Text>
+                        <Text className="text-[10px] font-mono text-neutral-400 uppercase mt-0.5">
+                          {isPaid ? "Lunas" : "Belum Bayar"}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            )}
+          </View>
         </ScrollView>
       )}
     </SafeAreaView>

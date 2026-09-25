@@ -47,124 +47,105 @@ export const ReadCustomerVehicle = ({
 }: ReadCustomerVehicleProps) => {
   const [actionStep, setActionStep] = useState<ActionStep>(null);
 
-  const renderVehicleItem = (vehicle: Vehicle) => (
-    <View
-      key={vehicle.id}
-      className="bg-darkBg rounded-xl p-3 mb-2 border border-darkBorder flex-row justify-between items-center"
-    >
-      <View className="flex-1">
-        <Text className="text-sm font-bold text-white font-mono">
-          {vehicle.plateNumber}
-        </Text>
-        <Text className="text-xs text-neutral-400 mt-0.5">
-          {vehicle.brand} {vehicle.model}{" "}
-          {vehicle.color ? "(" + vehicle.color + ")" : ""}
-        </Text>
-      </View>
-    </View>
-  );
+  const getCustomerVehicles = (cust: Customer) => {
+    return vehicles.filter((v) => String(v.customerId) === String(cust.id));
+  };
 
-  const renderCustomerCard = ({ item: cust }: { item: Customer }) => {
-    const customerVehicles = vehicles.filter(
-      (v) => String(v.customerId) === String(cust.id),
-    );
+  const renderCustomerRow = ({ item: cust }: { item: Customer }) => {
+    const customerVehicles = getCustomerVehicles(cust);
 
     return (
-      <View className="bg-darkSurface rounded-2xl p-4 mb-3 border border-darkBorder">
+      <View className="py-4 px-6 border-b border-neutral-100">
         <View className="flex-row justify-between items-start mb-2">
-          <View className="flex-1 mr-2">
-            <Text className="text-base font-bold text-white">{cust.name}</Text>
-            <Text className="text-xs text-neonPurple mt-0.5 font-medium">
+          <View className="flex-1 mr-3">
+            <Text className="text-base font-black text-black">{cust.name}</Text>
+            <Text className="text-xs text-neutral-400 font-mono mt-0.5">
               {cust.phone}
             </Text>
+            {cust.address && (
+              <Text className="text-xs text-neutral-400 mt-0.5" numberOfLines={1}>
+                {cust.address}
+              </Text>
+            )}
           </View>
 
-          <View className="flex-row items-center gap-2">
-            <View className="bg-neonPurple/15 px-2.5 py-1 rounded-lg border border-neonPurple/30">
-              <Text className="text-xs text-neonPurple font-bold">
-                {customerVehicles.length} Unit
-              </Text>
-            </View>
+          <View className="flex-row items-center gap-3">
+            <Text className="text-xs font-mono text-neutral-400">
+              {customerVehicles.length} UNIT
+            </Text>
 
             <TouchableOpacity
-              className="w-8 h-8 rounded-lg bg-darkBg border border-darkBorder items-center justify-center"
+              className="p-1"
               onPress={() => setActionStep({ step: "CHOICE", customer: cust })}
               activeOpacity={0.7}
             >
-              <Text className="text-neutral-400 font-bold text-base leading-none">
-                ⋮
+              <Text className="text-neutral-500 font-bold text-base leading-none">
+                •••
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {cust.address && (
-          <Text className="text-xs text-neutral-400 mb-3" numberOfLines={1}>
-            {cust.address}
-          </Text>
-        )}
-
-        <View className="h-[1px] bg-neutral-800 my-2" />
-
-        <Text className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider mb-2">
-          Unit Kendaraan Terdaftar:
-        </Text>
-
-        {customerVehicles.length === 0 ? (
-          <View className="bg-darkBg rounded-xl p-3 border border-dashed border-neutral-800 items-center">
-            <Text className="text-xs text-neutral-500">
-              Belum ada unit kendaraan terdaftar
-            </Text>
+        {customerVehicles.length > 0 && (
+          <View className="mt-2 pt-2 border-t border-neutral-100 gap-1.5">
+            {customerVehicles.map((vehicle) => (
+              <View
+                key={vehicle.id}
+                className="flex-row items-center justify-between py-1"
+              >
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-xs font-bold text-black font-mono">
+                    {vehicle.plateNumber}
+                  </Text>
+                  <Text className="text-xs text-neutral-500">
+                    {vehicle.brand} {vehicle.model}
+                  </Text>
+                </View>
+                {vehicle.color && (
+                  <Text className="text-[11px] text-neutral-400">
+                    {vehicle.color}
+                  </Text>
+                )}
+              </View>
+            ))}
           </View>
-        ) : (
-          customerVehicles.map(renderVehicleItem)
         )}
       </View>
     );
   };
 
-  const getCustomerVehicles = (cust: Customer) => {
-    return vehicles.filter((v) => String(v.customerId) === String(cust.id));
-  };
-
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center p-5 bg-darkBg">
-        <ActivityIndicator size="large" color="#a855f7" />
-        <Text className="mt-3 text-xs text-neutral-400 font-medium">
-          Memuat data pelanggan & unit...
+      <View className="flex-1 justify-center items-center p-5 bg-white">
+        <ActivityIndicator size="small" color="#000000" />
+        <Text className="mt-3 text-xs text-neutral-400 font-mono tracking-wider">
+          MEMUAT DATA...
         </Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-white">
       <FlatList
         data={customers}
         keyExtractor={(item) => String(item.id)}
-        renderItem={renderCustomerCard}
-        contentContainerStyle={{ padding: 16, paddingBottom: 20 }}
+        renderItem={renderCustomerRow}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={onRefresh}
-            tintColor="#a855f7"
-            colors={["#a855f7"]}
+            tintColor="#000000"
+            colors={["#000000"]}
           />
         }
         ListEmptyComponent={
-          <View className="bg-darkSurface rounded-2xl p-6 items-center border border-darkBorder my-4">
-            <Text className="text-base font-bold text-white mb-1.5">
+          <View className="py-16 items-center px-6">
+            <Text className="text-xs text-neutral-400 font-mono text-center">
               {searchQuery
-                ? "Pelanggan Tidak Ditemukan"
-                : "Belum Ada Pelanggan"}
-            </Text>
-            <Text className="text-xs text-neutral-500 text-center leading-5">
-              {searchQuery
-                ? "Coba gunakan kata kunci pencarian yang lain."
-                : "Data pelanggan dari backend masih kosong."}
+                ? "Pelanggan tidak ditemukan."
+                : "Belum ada data pelanggan."}
             </Text>
           </View>
         }
@@ -177,27 +158,27 @@ export const ReadCustomerVehicle = ({
         onRequestClose={() => setActionStep(null)}
       >
         <Pressable
-          className="flex-1 bg-black/60 justify-end"
+          className="flex-1 bg-black/40 justify-end"
           onPress={() => setActionStep(null)}
         >
           <Pressable
-            className="bg-darkSurface border-t border-darkBorder rounded-t-3xl p-5 max-h-[80%]"
+            className="bg-white border-t border-neutral-200 rounded-t-3xl p-6 max-h-[80%]"
             onPress={(e) => e.stopPropagation()}
           >
             {actionStep?.step === "CHOICE" && (
               <View>
-                <View className="items-center mb-4">
-                  <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-                  <Text className="w-full text-center text-xs text-neutral-400 uppercase font-semibold px-4">
-                    Pilih Kategori Aksi
+                <View className="items-center mb-5">
+                  <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                  <Text className="text-xs text-neutral-400 font-mono uppercase tracking-wider">
+                    Kelola
                   </Text>
-                  <Text className="w-full text-center text-base font-bold text-white px-4 mt-0.5">
+                  <Text className="text-lg font-black text-black mt-0.5">
                     {actionStep.customer.name}
                   </Text>
                 </View>
 
                 <TouchableOpacity
-                  className="bg-darkBg border border-darkBorder rounded-xl p-4 mb-3 flex-row items-center justify-between"
+                  className="py-4 border-b border-neutral-100 flex-row items-center justify-between"
                   onPress={() =>
                     setActionStep({
                       step: "CUSTOMER",
@@ -205,18 +186,14 @@ export const ReadCustomerVehicle = ({
                     })
                   }
                 >
-                  <View className="flex-row items-center space-x-3">
-                    <View>
-                      <Text className="text-sm font-bold text-white">
-                        Kelola Pelanggan
-                      </Text>
-                    </View>
-                  </View>
-                  <Text className="text-neutral-500 font-bold text-lg">›</Text>
+                  <Text className="text-sm font-bold text-black">
+                    Kelola Data Pelanggan
+                  </Text>
+                  <Text className="text-neutral-400 text-lg">›</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="bg-darkBg border border-darkBorder rounded-xl p-4 mb-3 flex-row items-center justify-between"
+                  className="py-4 border-b border-neutral-100 flex-row items-center justify-between"
                   onPress={() =>
                     setActionStep({
                       step: "VEHICLE_SELECT",
@@ -224,25 +201,22 @@ export const ReadCustomerVehicle = ({
                     })
                   }
                 >
-                  <View className="flex-row items-center space-x-3">
-                    <View>
-                      <Text className="text-sm font-bold text-white">
-                        Kelola Kendaraan
-                      </Text>
-                      <Text className="text-xs text-neonPurple font-medium">
-                        {getCustomerVehicles(actionStep.customer).length} Unit
-                        Terdaftar
-                      </Text>
-                    </View>
+                  <View>
+                    <Text className="text-sm font-bold text-black">
+                      Kelola Unit Kendaraan
+                    </Text>
+                    <Text className="text-xs text-neutral-400 font-mono mt-0.5">
+                      {getCustomerVehicles(actionStep.customer).length} Unit Terdaftar
+                    </Text>
                   </View>
-                  <Text className="text-neutral-500 font-bold text-lg">›</Text>
+                  <Text className="text-neutral-400 text-lg">›</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="w-full py-3 items-center justify-center"
+                  className="w-full py-4 items-center justify-center mt-2"
                   onPress={() => setActionStep(null)}
                 >
-                  <Text className="w-full text-center text-xs text-neutral-400 font-semibold px-4">
+                  <Text className="text-xs font-mono uppercase text-neutral-400">
                     Batal
                   </Text>
                 </TouchableOpacity>
@@ -251,44 +225,44 @@ export const ReadCustomerVehicle = ({
 
             {actionStep?.step === "CUSTOMER" && (
               <View>
-                <View className="items-center mb-4">
-                  <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-                  <Text className="w-full text-center text-xs text-neutral-400 uppercase font-semibold px-4">
-                    Kelola Pelanggan
+                <View className="items-center mb-5">
+                  <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                  <Text className="text-xs text-neutral-400 font-mono uppercase tracking-wider">
+                    Pelanggan
                   </Text>
-                  <Text className="w-full text-center text-base font-bold text-white px-4 mt-0.5">
+                  <Text className="text-lg font-black text-black mt-0.5">
                     {actionStep.customer.name}
                   </Text>
                 </View>
 
                 <TouchableOpacity
-                  className="bg-darkBg border border-darkBorder rounded-xl p-3.5 mb-2.5 flex-row items-center justify-center"
+                  className="py-4 border-b border-neutral-100"
                   onPress={() => {
                     const cust = actionStep.customer;
                     setActionStep(null);
                     onEditCustomer(cust);
                   }}
                 >
-                  <Text className="text-sm font-semibold text-white">
-                    Edit Pelanggan
+                  <Text className="text-sm font-bold text-black text-center">
+                    Edit Data Pelanggan
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 mb-3 flex-row items-center justify-center"
+                  className="py-4 border-b border-neutral-100"
                   onPress={() => {
                     const cust = actionStep.customer;
                     setActionStep(null);
                     onDeleteCustomer(cust);
                   }}
                 >
-                  <Text className="text-sm font-semibold text-red-400">
+                  <Text className="text-sm font-bold text-red-600 text-center">
                     Hapus Pelanggan
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="w-full py-3 items-center justify-center"
+                  className="w-full py-4 items-center justify-center mt-2"
                   onPress={() =>
                     setActionStep({
                       step: "CHOICE",
@@ -296,7 +270,7 @@ export const ReadCustomerVehicle = ({
                     })
                   }
                 >
-                  <Text className="w-full text-center text-xs text-neonPurple font-semibold px-4">
+                  <Text className="text-xs font-mono uppercase text-neutral-400">
                     Kembali
                   </Text>
                 </TouchableOpacity>
@@ -305,31 +279,31 @@ export const ReadCustomerVehicle = ({
 
             {actionStep?.step === "VEHICLE_SELECT" && (
               <View>
-                <View className="items-center mb-4">
-                  <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-                  <Text className="w-full text-center text-xs text-neutral-400 uppercase font-semibold px-4">
+                <View className="items-center mb-5">
+                  <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                  <Text className="text-xs text-neutral-400 font-mono uppercase tracking-wider">
                     Pilih Kendaraan
                   </Text>
-                  <Text className="w-full text-center text-base font-bold text-white px-4 mt-0.5">
+                  <Text className="text-lg font-black text-black mt-0.5">
                     {actionStep.customer.name}
                   </Text>
                 </View>
 
                 {getCustomerVehicles(actionStep.customer).length === 0 ? (
-                  <View className="bg-darkBg rounded-xl p-4 border border-dashed border-neutral-800 items-center mb-4">
-                    <Text className="text-xs text-neutral-500">
-                      Belum ada unit kendaraan terdaftar untuk pelanggan ini.
+                  <View className="py-6 items-center">
+                    <Text className="text-xs text-neutral-400 font-mono">
+                      Belum ada unit kendaraan terdaftar.
                     </Text>
                   </View>
                 ) : (
                   <ScrollView
-                    className="max-h-60 mb-2"
+                    className="max-h-60"
                     showsVerticalScrollIndicator={false}
                   >
                     {getCustomerVehicles(actionStep.customer).map((veh) => (
                       <TouchableOpacity
                         key={veh.id}
-                        className="bg-darkBg border border-darkBorder rounded-xl p-3 mb-2 flex-row justify-between items-center"
+                        className="py-3 border-b border-neutral-100 flex-row justify-between items-center"
                         onPress={() =>
                           setActionStep({
                             step: "VEHICLE",
@@ -339,15 +313,14 @@ export const ReadCustomerVehicle = ({
                         }
                       >
                         <View>
-                          <Text className="text-sm font-bold text-white font-mono tracking-wider">
+                          <Text className="text-sm font-bold text-black font-mono">
                             {veh.plateNumber}
                           </Text>
                           <Text className="text-xs text-neutral-400 mt-0.5">
-                            {veh.brand} {veh.model}{" "}
-                            {veh.color ? "(" + veh.color + ")" : ""}
+                            {veh.brand} {veh.model} {veh.color ? `(${veh.color})` : ""}
                           </Text>
                         </View>
-                        <Text className="text-xs text-neonPurple font-semibold">
+                        <Text className="text-xs font-mono text-neutral-400 uppercase">
                           Pilih ›
                         </Text>
                       </TouchableOpacity>
@@ -356,7 +329,7 @@ export const ReadCustomerVehicle = ({
                 )}
 
                 <TouchableOpacity
-                  className="w-full py-3 items-center justify-center"
+                  className="w-full py-4 items-center justify-center mt-2"
                   onPress={() =>
                     setActionStep({
                       step: "CHOICE",
@@ -364,7 +337,7 @@ export const ReadCustomerVehicle = ({
                     })
                   }
                 >
-                  <Text className="w-full text-center text-xs text-neonPurple font-semibold px-4">
+                  <Text className="text-xs font-mono uppercase text-neutral-400">
                     Kembali
                   </Text>
                 </TouchableOpacity>
@@ -373,47 +346,47 @@ export const ReadCustomerVehicle = ({
 
             {actionStep?.step === "VEHICLE" && (
               <View>
-                <View className="items-center mb-4">
-                  <View className="w-10 h-1 bg-neutral-700 rounded-full mb-3" />
-                  <Text className="w-full text-center text-xs text-neutral-400 uppercase font-semibold px-4">
+                <View className="items-center mb-5">
+                  <View className="w-8 h-1 bg-neutral-300 rounded-full mb-3" />
+                  <Text className="text-xs text-neutral-400 font-mono uppercase tracking-wider">
                     Aksi Kendaraan
                   </Text>
-                  <Text className="w-full text-center text-base font-bold text-white font-mono px-4 mt-0.5">
+                  <Text className="text-base font-black text-black font-mono mt-0.5">
                     {actionStep.vehicle.plateNumber}
                   </Text>
-                  <Text className="w-full text-center text-xs text-neutral-400 px-4 mt-0.5">
+                  <Text className="text-xs text-neutral-400 mt-0.5">
                     {actionStep.vehicle.brand} {actionStep.vehicle.model}
                   </Text>
                 </View>
 
                 <TouchableOpacity
-                  className="bg-darkBg border border-darkBorder rounded-xl p-3.5 mb-2.5 flex-row items-center justify-center"
+                  className="py-4 border-b border-neutral-100"
                   onPress={() => {
                     const veh = actionStep.vehicle;
                     setActionStep(null);
                     onEditVehicle(veh);
                   }}
                 >
-                  <Text className="text-sm font-semibold text-white">
+                  <Text className="text-sm font-bold text-black text-center">
                     Edit Kendaraan
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="bg-red-500/10 border border-red-500/30 rounded-xl p-3.5 mb-3 flex-row items-center justify-center"
+                  className="py-4 border-b border-neutral-100"
                   onPress={() => {
                     const veh = actionStep.vehicle;
                     setActionStep(null);
                     onDeleteVehicle(veh);
                   }}
                 >
-                  <Text className="text-sm font-semibold text-red-400">
+                  <Text className="text-sm font-bold text-red-600 text-center">
                     Hapus Kendaraan
                   </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="w-full py-3 items-center justify-center"
+                  className="w-full py-4 items-center justify-center mt-2"
                   onPress={() =>
                     setActionStep({
                       step: "VEHICLE_SELECT",
@@ -421,7 +394,7 @@ export const ReadCustomerVehicle = ({
                     })
                   }
                 >
-                  <Text className="w-full text-center text-xs text-neonPurple font-semibold px-4">
+                  <Text className="text-xs font-mono uppercase text-neutral-400">
                     Kembali
                   </Text>
                 </TouchableOpacity>

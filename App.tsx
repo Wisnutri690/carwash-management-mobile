@@ -1,30 +1,32 @@
 import "./global.css";
 import { View, ActivityIndicator, StatusBar, Text } from 'react-native';
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider, useAuth } from './src/context/authContext';
 import LoginScreen from './src/screens/LoginScreen';
 import DashboardScreen from './src/screens/Dashboard';
 import CustomerVehicleScreen from "./src/screens/CustomerVehicle";
 import OrderScreen from "./src/screens/OrderScreens";
+import SalesScreen from "./src/screens/SalesScreen";
 
 export type RootStackParamList = {
   Login: undefined;
   Dashboard: undefined;
   CustomerVehicle: undefined;
   OrderScreen: undefined;
+  Sales: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-const customDarkTheme = {
-  ...DarkTheme,
+const monochromeTheme = {
+  ...DefaultTheme,
   colors: {
-    ...DarkTheme.colors,
-    background: '#0a0a0a',
-    card: '#121212',
-    text: '#ffffff',
-    border: '#262626',
+    ...DefaultTheme.colors,
+    background: '#ffffff',
+    card: '#ffffff',
+    text: '#000000',
+    border: '#e4e4e7',
   },
 };
 
@@ -33,22 +35,22 @@ const RootNavigator = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-darkBg">
-        <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
-        <ActivityIndicator size="large" color="#a855f7" />
-        <Text className="mt-4 text-xs text-neutral-400 font-medium tracking-wide">
-          Memuat APEX CARWASH...
+      <View className="flex-1 justify-center items-center bg-white">
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <ActivityIndicator size="small" color="#000000" />
+        <Text className="mt-4 text-xs text-neutral-400 font-mono tracking-widest uppercase">
+          APEX CARWASH
         </Text>
       </View>
     );
   }
 
   return (
-    <NavigationContainer theme={customDarkTheme}>
+    <NavigationContainer theme={monochromeTheme}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: '#0a0a0a' },
+          contentStyle: { backgroundColor: '#ffffff' },
         }}>
         {!isAuthenticated ? (
           <Stack.Screen name="Login" component={LoginScreen} />
@@ -63,6 +65,10 @@ const RootNavigator = () => {
               name="OrderScreen"
               component={OrderScreen}
               options={{ headerShown: false }} />
+            <Stack.Screen
+              name="Sales"
+              component={SalesScreen}
+              options={{ headerShown: false }} />
           </>
         )}
       </Stack.Navigator>
@@ -73,7 +79,7 @@ const RootNavigator = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <StatusBar barStyle="light-content" backgroundColor="#0a0a0a" />
+      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <RootNavigator />
     </AuthProvider>
   );
