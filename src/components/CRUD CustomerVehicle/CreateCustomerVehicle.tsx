@@ -36,6 +36,7 @@ export const CreateCustomerVehicle = ({
   );
   const [customerSearch, setCustomerSearch] = useState<string>("");
   const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [address, setAddress] = useState<string>("");
 
@@ -51,6 +52,7 @@ export const CreateCustomerVehicle = ({
     setSelectedCustomer(null);
     setCustomerSearch("");
     setName("");
+    setEmail("");
     setPhone("");
     setAddress("");
     setPlateNumber("");
@@ -71,11 +73,17 @@ export const CreateCustomerVehicle = ({
     }
 
     if (registrationMode === "NEW_CUSTOMER") {
-      if (!name.trim() || !phone.trim()) {
+      if (!name.trim() || !email.trim() || !phone.trim()) {
         Alert.alert(
           "Perhatian",
-          "Nama dan Nomor Telepon Customer wajib diisi!",
+          "Nama, Email, dan Nomor Telepon Customer wajib diisi!",
         );
+        return;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email.trim())) {
+        Alert.alert("Perhatian", "Format email tidak valid!");
         return;
       }
     } else {
@@ -96,6 +104,7 @@ export const CreateCustomerVehicle = ({
       if (registrationMode === "NEW_CUSTOMER") {
         const newCust = await createCustomer({
           name: name.trim(),
+          email: email.trim().toLowerCase(),
           phone: phone.trim(),
           address: address.trim() || undefined,
         });
@@ -215,6 +224,20 @@ export const CreateCustomerVehicle = ({
                     placeholderTextColor="#a3a3a3"
                     value={name}
                     onChangeText={setName}
+                  />
+                </View>
+                <View className="mb-3">
+                  <Text className="text-[10px] font-mono uppercase text-neutral-400 mb-1">
+                    Email *
+                  </Text>
+                  <TextInput
+                    className="h-10 border-b border-neutral-200 text-black text-sm px-0"
+                    placeholder="customer@example.com"
+                    placeholderTextColor="#a3a3a3"
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={email}
+                    onChangeText={setEmail}
                   />
                 </View>
                 <View className="mb-3">
